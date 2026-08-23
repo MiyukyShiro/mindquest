@@ -11,10 +11,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Capacitor installieren
-        run: npm i @capacitor/core@latest @capacitor/cli@latest @capacitor/ios@latest
+        run: npm install --no-audit --no-fund @capacitor/core@7 @capacitor/cli@7 @capacitor/ios@7
 
       - name: iOS-Projekt erzeugen
         run: npx cap add ios
@@ -43,3 +43,4 @@ jobs:
           name: MindQuest-IPA-unsigniert
           path: MindQuest-unsigned.ipa
           if-no-files-found: error
+
