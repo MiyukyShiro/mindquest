@@ -1,0 +1,45 @@
+name: MindQuest IPA bauen (unsigniert)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Capacitor installieren
+        run: npm i @capacitor/core@latest @capacitor/cli@latest @capacitor/ios@latest
+
+      - name: iOS-Projekt erzeugen
+        run: npx cap add ios
+
+      - name: Berechtigungen eintragen
+        run: bash scripts/ios-plist.sh
+
+      - name: Web-Dateien übernehmen
+        run: npx cap sync ios
+
+      - name: Ohne Signatur bauen
+        run: |
+          xcodebuild -workspace ios/App/App.xcworkspace \
+            -scheme App -configuration Release -sdk iphoneos \
+            -archivePath "$PWD/build/App.xcarchive" archive \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
+      - name: IPA packen
+        run: |
+          mkdir -p Payload
+          cp -R build/App.xcarchive/Products/Applications/App.app Payload/
+          zip -qr MindQuest-unsigned.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MindQuest-IPA-unsigniert
+          path: MindQuest-unsigned.ipa
+          if-no-files-found: error
