@@ -1,6 +1,6 @@
 # MindQuest — als App
 
-Drei Wege, sortiert nach Aufwand. Alle nutzen dieselbe Datei `www/index.html`.
+Drei Wege, sortiert nach Aufwand. Alle nutzen dieselbe Datei `docs/index.html`.
 
 ---
 
@@ -149,6 +149,13 @@ mindquest/
 ├─ package.json
 └─ README.md
 ```
+
+**Achtung beim Hochladen:** Windows und macOS blenden Ordner aus, deren Name mit
+einem Punkt beginnt — `.github` wird beim Ziehen darum oft stillschweigend
+weggelassen. Fehlt der Ordner, gibt es keinen Reiter *Actions* und keine APK.
+Lege die beiden Dateien in dem Fall über *Add file → Create new file* an und
+tippe den vollen Pfad `.github/workflows/android.yml` in das Namensfeld:
+Sobald du einen Schrägstrich tippst, legt GitHub den Ordner selbst an.
 
 **Die Ordner sind Pflicht.** Liegen alle Dateien flach im Hauptverzeichnis,
 findet GitHub die Workflows nicht (die müssen in `.github/workflows/` liegen)
