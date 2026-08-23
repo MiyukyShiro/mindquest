@@ -1,0 +1,173 @@
+# MindQuest — als App
+
+Drei Wege, sortiert nach Aufwand. Alle nutzen dieselbe Datei `www/index.html`.
+
+---
+
+## Weg 1 — Installierbare Web-App (10 Minuten, kein Programm nötig)
+
+Das Ergebnis ist ein echtes Icon auf dem Startbildschirm, Vollbild ohne Browserleiste,
+offline lauffähig. Für die meisten ist das schon die ganze Miete.
+
+1. GitHub-Konto anlegen, **New repository** → Name `mindquest`, **Public**.
+2. Den Inhalt des Ordners `www/` per **Add file → Upload files** hochladen
+   (`index.html`, `sw.js`, `manifest.webmanifest`, die drei PNGs).
+3. **Settings → Pages** → Source: `Deploy from a branch`, Branch: `main`, Ordner `/ (root)` → Save.
+4. Nach ein bis zwei Minuten steht deine Adresse dort:
+   `https://DEINNAME.github.io/mindquest/`
+5. Am Handy öffnen:
+   - **Android/Chrome:** Menü ⋮ → *App installieren*
+   - **iPhone/Safari:** Teilen-Symbol → *Zum Home-Bildschirm*
+
+Ab jetzt funktionieren Schrittzähler, Mikrofon, Sperrbildschirm-Steuerung und Wetter —
+die brauchen alle eine `https`-Adresse.
+
+---
+
+## Weg 2 — Echte APK, ohne irgendetwas zu installieren
+
+GitHub baut die App für dich in der Cloud. Du brauchst kein Android Studio.
+
+1. Repository anlegen wie oben, aber **den ganzen Projektordner** hochladen
+   (also `www/`, `resources/`, `package.json`, `capacitor.config.json`, `.github/`).
+2. Reiter **Actions** öffnen → falls gefragt, Workflows aktivieren.
+3. Links **„MindQuest APK bauen"** wählen → **Run workflow**.
+4. Nach etwa fünf Minuten unten bei **Artifacts** die Datei `MindQuest-APK` laden.
+5. `app-debug.apk` aufs Handy kopieren und öffnen.
+   Android fragt einmal nach der Erlaubnis, Apps aus dieser Quelle zu installieren.
+
+Die APK ist mit einem Debug-Schlüssel signiert: gut für dich und Freunde,
+nicht für den Play Store. Dafür brauchst du einen eigenen Signaturschlüssel.
+
+---
+
+## Weg 3 — Lokal bauen (wenn du es selbst in der Hand haben willst)
+
+Vorausgesetzt: [Node.js](https://nodejs.org) und [Android Studio](https://developer.android.com/studio).
+
+```bash
+npm run setup        # Capacitor installieren
+npm run add:android  # Android-Projekt erzeugen
+npm run apk          # APK bauen
+```
+
+Die fertige Datei liegt unter `android/app/build/outputs/apk/debug/app-debug.apk`.
+Mit `npm run open:android` öffnest du das Projekt stattdessen in Android Studio —
+dort läuft es auch direkt auf einem angeschlossenen Handy.
+
+Für den Schrittzähler danach einmal `bash scripts/android-manifest.sh` ausführen.
+Für iOS siehe den eigenen Abschnitt weiter unten.
+
+---
+
+## iPhone und iPad
+
+Beides geht — aber Apple macht es umständlicher als Android.
+
+### Weg 1 funktioniert unverändert
+
+GitHub Pages, Safari öffnen, **Teilen → Zum Home-Bildschirm**. Danach eigenes Icon,
+Vollbild, offline. Ein paar Besonderheiten:
+
+* Es **muss Safari sein**. Chrome auf dem iPhone kann keine Web-Apps installieren.
+* Der Schrittzähler fragt einmal um Erlaubnis, das ist normal und ab iOS 13 Pflicht.
+* Musik **stoppt beim Sperren des Bildschirms**. Das ist eine Beschränkung von WebKit,
+  kein Fehler. Die App merkt das selbst und sagt es dir.
+* Lege dir gelegentlich über *Verlauf → Sicherung speichern* eine Kopie an.
+
+### Weg 2: echte iOS-App (`.ipa`)
+
+Im Projekt liegt ein zweiter Workflow, `ios.yml`. Er läuft auf einem Mac in GitHubs
+Cloud, baut die App **ohne Signatur** und legt dir eine `MindQuest-unsigned.ipa` bereit.
+Starten unter *Actions → MindQuest IPA bauen → Run workflow*.
+
+Diese Datei musst du danach selbst signieren — Apple lässt keine unsignierten Apps zu.
+Dafür brauchst du keinen Entwicklervertrag, eine normale Apple-ID genügt:
+
+* **[Sideloadly](https://sideloadly.io)** (Windows oder Mac): iPhone anstecken, IPA
+  hineinziehen, Apple-ID eintragen, *Start*.
+* **[AltStore](https://altstore.io) / SideStore**: signiert ebenfalls mit deiner Apple-ID
+  und erneuert die App automatisch über WLAN.
+
+Mit einer kostenlosen Apple-ID läuft die App **sieben Tage**, danach einmal neu signieren.
+Mit dem kostenpflichtigen Entwicklerprogramm (99 $/Jahr) sind es zwölf Monate,
+und du könntest sie über TestFlight an andere verteilen.
+
+### Was die native App auf iOS besser kann
+
+Der Workflow trägt über `scripts/ios-plist.sh` den Hintergrund-Audio-Modus ein.
+Dadurch läuft die Musikreise dort **auch bei gesperrtem Bildschirm weiter** —
+genau das, was die Web-App auf dem iPhone nicht schafft.
+
+### Lokal auf einem Mac
+
+```bash
+npm i @capacitor/ios@latest
+npx cap add ios
+bash scripts/ios-plist.sh
+npx cap sync ios
+npx cap open ios
+```
+
+In Xcode oben dein Gerät wählen, unter *Signing & Capabilities* deine Apple-ID
+eintragen und auf ▶ drücken. Das ist der bequemste Weg, wenn du einen Mac hast.
+
+### Funktionen im Vergleich
+
+| | iPhone Web-App | iPhone `.ipa` | Android APK |
+|---|---|---|---|
+| Musik, Quests, Wetter, Speicher | läuft | läuft | läuft |
+| Schrittzähler | läuft | läuft | läuft |
+| Sprach-Tagebuch | läuft | Plugin nötig | Plugin nötig |
+| Musik bei gesperrtem Bildschirm | **nein** | läuft | mit Plugin |
+| Installation | drei Tipps | signieren, 7 Tage | direkt, dauerhaft |
+
+---
+
+## Icons austauschen
+
+`resources/icon.png` (1024×1024) und `resources/splash.png` ersetzen, dann:
+
+```bash
+npm i -D @capacitor/assets && npx capacitor-assets generate
+```
+
+Das erzeugt alle Grössen für Android und iOS automatisch.
+
+---
+
+## Was in der App anders läuft als im Browser
+
+| Funktion | Web-App (Weg 1) | APK (Weg 2/3) |
+|---|---|---|
+| Musik, Quests, Wetter, Speicher | läuft | läuft |
+| Schrittzähler | läuft | läuft |
+| Sprach-Tagebuch | läuft | **läuft nicht** — Android-WebViews haben keine Web Speech API |
+| Musik bei gesperrtem Bildschirm | meist | braucht einen Vordergrunddienst |
+| Schritte der letzten 24 h | nein, nur bei offener App | mit Health-Connect-Plugin möglich |
+
+Die zwei Lücken schliesst du mit je einem Plugin:
+
+```bash
+npm i @capacitor-community/speech-recognition   # Sprache
+npm i @capacitor-community/keep-awake           # Bildschirm/Audio wach halten
+```
+
+Danach `npx cap sync`. Im Code sind die Stellen markiert: `Voice.toggle()`
+für die Spracherkennung, `setBackgroundMode()` für die Wiedergabe.
+
+---
+
+## Berechtigungen
+
+Capacitor fragt Standort und Mikrofon automatisch ab, sobald der Code sie nutzt.
+Für den Bewegungssensor braucht Android 10+ zusätzlich in
+`android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+```
+
+---
+
+MindQuest ist ein Selbsthilfe-Werkzeug und ersetzt keine Therapie.
