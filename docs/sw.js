@@ -1,8 +1,9 @@
 /* Lumo Service Worker
    WICHTIG: index.html wird zuerst aus dem Netz geholt, damit eine neue Fassung
    sofort ankommt. Der Cache ist nur der Rückfall, wenn du offline bist. */
-const CACHE = "lumo-v6";
-const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
+const CACHE = "lumo-v8";
+const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png",
+  "./apple-touch-icon.png", "./apple-touch-icon-180.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

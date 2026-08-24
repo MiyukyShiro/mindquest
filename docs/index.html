@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Lumo — The Sound of My Mind</title>
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180.png">
+<link rel="apple-touch-icon" sizes="167x167" href="apple-touch-icon-167.png">
+<link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152.png">
+<link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Lumo">
 <meta name="theme-color" content="#0B0918">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -154,7 +159,7 @@ h2.title{font-family:var(--font-display);font-weight:600;font-size:26px;margin:0
 }
 .mood-b .e{font-size:27px;display:block;line-height:1.1}
 .mood-b .n{display:block;margin-top:7px;font-size:12.5px;font-weight:600}
-.mood-b i{position:absolute;inset:auto 0 0 0;height:3px;border-radius:0 0 var(--r-sm) var(--r-sm);background:var(--c)}
+.mood-b i{position:absolute;inset:auto 0 0 0;height:5px;border-radius:0 0 var(--r-sm) var(--r-sm);background:var(--c);box-shadow:0 0 14px -2px var(--c)}
 .mood-b:hover{transform:translateY(-3px);border-color:var(--c);box-shadow:0 10px 26px -14px var(--c)}
 .mood-b[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 16%,var(--panel2))}
 
@@ -829,7 +834,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,.intro::-webkit-scrollbar,.sheet
 
   <footer class="foot">
     <button class="btn ghost" id="helpLink" style="font-size:12.5px;padding:9px 16px;margin-bottom:12px">Notfall-Nummern</button><br>
-    <span id="buildTag" style="font-family:var(--font-mono);letter-spacing:.1em">v22 · 2026-08-24</span><br>
+    <span id="buildTag" style="font-family:var(--font-mono);letter-spacing:.1em">v1.5 · Testphase</span><br>
     Lumo ist ein Selbsthilfe-Werkzeug und ersetzt keine Therapie.<br>
     Wenn es dir länger schlecht geht, sprich mit jemandem, dem du vertraust, oder mit einer Fachperson.
     <br><br><span class="sig">白 &nbsp;Shiro&nbsp; 白</span>
@@ -2458,8 +2463,11 @@ function installManifest(){
     const url = URL.createObjectURL(new Blob([JSON.stringify(man)],{type:"application/manifest+json"}));
     const l = document.createElement("link"); l.rel = "manifest"; l.href = url;
     document.head.appendChild(l);
-    const a = document.createElement("link"); a.rel = "apple-touch-icon"; a.href = i192;
-    document.head.appendChild(a);
+    [180, 167, 152, 120].forEach(gr => {          // iOS sucht nach passender Groesse
+      const a = document.createElement("link");
+      a.rel = "apple-touch-icon"; a.setAttribute("sizes", gr + "x" + gr);
+      a.href = iconDataURL(gr); document.head.appendChild(a);
+    });
     const t = document.createElement("meta"); t.name = "theme-color"; t.content = "#0B0918";
     document.head.appendChild(t);
     const w = document.createElement("meta"); w.name = "apple-mobile-web-app-capable"; w.content = "yes";
@@ -5311,6 +5319,13 @@ function drawHeadSky(t){
 /* =========================================================
    LUMO-GESICHTER STATT EMOJIS
    ========================================================= */
+function mischen(h1, h2, t){                      // zwei Farben anteilig mischen
+  const a = parseInt(h1.slice(1),16), b = parseInt(h2.slice(1),16);
+  const r = Math.round((a>>16&255)*(1-t) + (b>>16&255)*t);
+  const g = Math.round((a>>8&255)*(1-t)  + (b>>8&255)*t);
+  const c = Math.round((a&255)*(1-t)     + (b&255)*t);
+  return "#" + ((1<<24)+(r<<16)+(g<<8)+c).toString(16).slice(1);
+}
 function dunkler(hex, f){
   const n = parseInt(hex.slice(1), 16);
   const r = Math.round(((n>>16)&255)*f), g = Math.round(((n>>8)&255)*f), b = Math.round((n&255)*f);
@@ -5320,8 +5335,13 @@ function dunkler(hex, f){
 function moodFace(m, px){
   px = px || 44;
   const id = "g" + m.id;
-  const pet = (typeof PETS !== "undefined" && PETS.find(p => p.id === S.eq.pet)) || null;
-  const hut = (S.outfit && S.outfit.kopf) ? outfitSVG("kopf", m.c) : "";
+  const pet = (typeof PETS !== "undefined" && PETS.find(p => p.id === S.eq.pet)) || PETS[0];
+  /* Dein Lumo, nur zur Stimmung hin eingefärbt — nicht umgekehrt */
+  const c1 = mischen(pet.c[0], m.c, .34), c2 = mischen(pet.c[1], m.c, .22);
+  const hut  = (S.outfit && S.outfit.kopf) ? outfitSVG("kopf", m.c) : "";
+  const hals = (S.outfit && S.outfit.hals) ? outfitSVG("hals", m.c) : "";
+  const gesi = (S.outfit && S.outfit.face) ? outfitSVG("face", m.c) : "";
+  const brille = !!(S.outfit && (S.outfit.face === "brille" || S.outfit.face === "sonnenb"));
   const sterne = (pet && pet.galaxy) ? (() => {                 // Galaxie auch im Kleinen
     let g2 = 7717; const r2 = () => (g2 = (g2*1103515245+12345) & 0x7fffffff)/0x7fffffff;
     let o = '<ellipse cx="80" cy="80" rx="44" ry="42" fill="#0a0620" opacity=".5"/>';
@@ -5342,17 +5362,18 @@ function moodFace(m, px){
     ? `<path d="M 58 44 l -9 -26 l 25 13 z" fill="url(#${id})"/><path d="M 102 44 l 9 -26 l -25 13 z" fill="url(#${id})"/>` : "";
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 124 124" width="${px}" height="${px}">
     <defs><radialGradient id="${id}" cx="38%" cy="30%">
-      <stop offset="0%" stop-color="${m.c}"/><stop offset="100%" stop-color="${dunkler(m.c, .55)}"/>
+      <stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${dunkler(c2, .8)}"/>
     </radialGradient></defs>
+    <ellipse cx="80" cy="80" rx="52" ry="51" fill="${m.c}" opacity=".18"/>
     ${ohren}
     <path d="M 80 34 c 30 0 46 22 46 46 c 0 26 -20 44 -46 44 c -26 0 -46 -18 -46 -44 c 0 -24 16 -46 46 -46 z" fill="url(#${id})"/>
     ${sterne}${braue}
-    <ellipse cx="66" cy="${eyeY}" rx="5.4" ry="${ry}" fill="#12102a"/>
+    ${brille ? "" : `<ellipse cx="66" cy="${eyeY}" rx="5.4" ry="${ry}" fill="#12102a"/>
     <ellipse cx="94" cy="${eyeY}" rx="5.4" ry="${ry}" fill="#12102a"/>
     <circle cx="67.8" cy="${eyeY-2}" r="1.8" fill="#fff" opacity=".9"/>
-    <circle cx="95.8" cy="${eyeY-2}" r="1.8" fill="#fff" opacity=".9"/>
+    <circle cx="95.8" cy="${eyeY-2}" r="1.8" fill="#fff" opacity=".9"/>`}
     <path d="${mund}" fill="none" stroke="#12102a" stroke-width="3.2" stroke-linecap="round"/>
-    ${hut}
+    ${gesi}${hals}${hut}
   </svg>`;
   return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
 }
