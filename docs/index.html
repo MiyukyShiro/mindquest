@@ -283,8 +283,6 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
 .stream.sp:hover{border-color:#1DB954;color:#1DB954}
 .stream.yt:hover{border-color:#FF3B30;color:#FF3B30}
 
-.fab{position:fixed;right:18px;bottom:22px;width:60px;height:60px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-size:25px;box-shadow:0 14px 32px -12px rgba(0,0,0,.75);z-index:60;display:none}
-.fab:active{transform:scale(.94)}
 .sheet{position:fixed;inset:0;z-index:80;display:none;overflow:auto;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px)}
 .sheet.on{display:block;animation:rise .3s cubic-bezier(.2,.8,.2,1)}
 .sheet-in{max-width:540px;margin:0 auto;padding:60px 20px 40px;position:relative}
@@ -294,7 +292,6 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
 .mood-grid.big .e{font-size:34px}
 
 @media(max-width:760px){
-  .fab{display:grid;place-items:center;bottom:calc(80px + env(safe-area-inset-bottom))}
   .wrap{padding-bottom:108px}
   #tabs{position:fixed;left:0;right:0;bottom:0;z-index:50;padding:8px 8px calc(8px + env(safe-area-inset-bottom));
     background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(16px);border-top:1px solid var(--edge)}
@@ -444,6 +441,30 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
 .say p{margin:0;font-size:13.5px;line-height:1.55;text-align:center}
 .say.quiet{border-color:color-mix(in srgb,var(--mood) 45%,var(--edge));background:color-mix(in srgb,var(--mood) 7%,var(--bg2))}
 .say.quiet:before{border-color:color-mix(in srgb,var(--mood) 45%,var(--edge))}
+
+/* ============ EINFÜHRUNG ============ */
+.intro{position:fixed;inset:0;z-index:95;display:none;overflow:auto;
+  background:color-mix(in srgb,var(--bg) 96%,transparent);backdrop-filter:blur(14px)}
+.intro.on{display:block;animation:rise .35s cubic-bezier(.2,.8,.2,1)}
+.intro-in{max-width:620px;margin:0 auto;padding:44px 20px 60px}
+.ib{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--edge);
+  font-size:13.5px;line-height:1.6;color:var(--muted)}
+.ib:last-of-type{border-bottom:0}
+.ib span{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+  background:var(--panel2);border:1px solid var(--edge);color:var(--accent);font-size:15px}
+.ib b{display:block;color:var(--text);font-size:15px;margin-bottom:3px;font-family:var(--font-display);font-weight:600}
+.ib i{color:var(--text);font-style:normal;font-weight:600}
+
+/* ============ GESCHICHTE ============ */
+.lore{padding:16px 0;border-bottom:1px solid var(--edge)}
+.lore:last-child{border-bottom:0}
+.lore h4{margin:0 0 4px;font-family:var(--font-display);font-size:18px;font-weight:600}
+.lore .lv{font-family:var(--font-mono);font-size:10.5px;color:var(--accent);letter-spacing:.16em;text-transform:uppercase}
+.lore p{margin:8px 0 0;font-size:14px;line-height:1.72;color:var(--muted)}
+.lore.locked h4{color:var(--muted)}
+.lore.locked p{filter:blur(3.5px);user-select:none;opacity:.5}
+.lore.locked .lv{color:var(--muted)}
+.lore.fresh{border-left:3px solid var(--accent);padding-left:14px;margin-left:-14px}
 </style>
 </head>
 <body>
@@ -461,6 +482,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
       </div>
       <div class="chip"><span class="k">Gold</span><span id="gold">0</span></div>
       <div class="chip"><span class="k">Serie</span><span id="streak">0</span></div>
+      <button class="chip" id="helpBtn" aria-label="Erklärung" style="font-weight:700;cursor:pointer">?</button>
       <select id="langSel" class="chip" style="padding:7px 10px" aria-label="Sprache">
         <option value="de">DE</option><option value="en">EN</option>
       </select>
@@ -494,6 +516,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
           <div class="pet-sub" id="petStage2">Stufe 1 · Funke</div>
         </div>
         <div class="say hidden" id="lumoSay"><p></p></div>
+        <button class="btn ghost" id="loreBtn" style="margin-top:10px;font-size:12.5px;padding:8px 14px">Lumos Geschichte</button>
       </div>
     </div>
 
@@ -504,8 +527,10 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
       <div class="btn-row">
         <button class="btn primary" data-go="check">Check-in starten</button>
         <button class="btn" data-go="quest">Offene Quests <span id="questCount" style="font-family:var(--font-mono);color:var(--muted)">(0)</span></button>
+        <button class="btn ghost" id="quickBtn">Schnell-Check-in</button>
         <button class="btn ghost" data-go="music">Direkt zur Musik</button>
       </div>
+      <div id="earlyBox"></div>
       <div class="note" id="dashNote"><b>Noch nichts hier.</b> Mach den ersten Check-in — er dauert unter einer Minute, und du kannst jeden Schritt überspringen.</div>
     </div>
   </section>
@@ -530,7 +555,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
         </div>
         <div class="mood-grid hidden" id="moodGrid"></div>
         <div class="btn-row">
-          <button class="btn primary" id="padNext" disabled>So klingt es</button>
+          <button class="btn primary" id="padNext" disabled>Weiter</button>
           <button class="btn primary hidden" id="s1next" disabled>Weiter</button>
           <button class="btn ghost" id="padSwitch">Lieber ein Emoji wählen</button>
         </div>
@@ -614,6 +639,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
       <div class="ctrls">
         <button class="btn primary" id="btnPlay">Abspielen</button>
         <button class="btn" id="btnSkip">Etappe überspringen</button>
+        <button class="btn ghost" id="beepBtn">Testton</button>
         <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)">Lautstärke <input type="range" id="vol" min="0" max="100" value="70"></label>
         <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)">Umgebung <select id="ambSel"></select></label>
       </div>
@@ -680,6 +706,20 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
         <div class="meter"><div class="k">Schnitt Stimmung</div><div class="v" id="stAvg">—</div></div>
         <div class="meter"><div class="k">Musikzeit</div><div class="v" id="stTime">0 min</div></div>
       </div>
+      <div class="card" id="remindBox" style="background:var(--bg2);margin:20px 0">
+        <p class="eyebrow">Erinnerung</p>
+        <p class="move-hint" style="margin-bottom:12px">Ein Check-in dauert zwanzig Sekunden — man muss nur daran denken. Die Mitteilung funktioniert, solange MindQuest im Hintergrund liegt. Zuverlässig an jedem Tag ist der Kalendereintrag: den trägt dein Handy selbst ein, unabhängig von der App.</p>
+        <div class="wx-form">
+          <input type="time" id="remindTime" value="19:00" style="max-width:140px">
+          <button class="btn" id="remindOn">Mitteilung erlauben</button>
+          <button class="btn" id="remindIcs">Kalendereintrag laden</button>
+        </div>
+        <p class="wx-state" id="remindState"></p>
+      </div>
+      <div class="card" id="privacyBox" style="background:var(--bg2);margin:20px 0">
+        <p class="eyebrow">Was gespeichert wird</p>
+        <p class="move-hint" id="privacyTxt" style="margin:0"></p>
+      </div>
       <div class="card" id="trustBox" style="background:var(--bg2);margin:20px 0">
         <p class="eyebrow">Vertrauensperson</p>
         <p class="move-hint" style="margin-bottom:12px">Eine Person, die du an schlechten Tagen mit einem Tipp erreichst. Name und Nummer bleiben auf diesem Gerät — MindQuest verschickt nichts von selbst und meldet nichts an niemanden.</p>
@@ -716,11 +756,42 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
   </section>
 
   <footer class="foot">
+    <span id="buildTag" style="font-family:var(--font-mono);letter-spacing:.1em">v15 · 2026-08-24</span><br>
     MindQuest ist ein Selbsthilfe-Werkzeug und ersetzt keine Therapie.<br>
     Wenn es dir länger schlecht geht, sprich mit jemandem, dem du vertraust, oder mit einer Fachperson.
   </footer>
 </div>
 
+<div class="intro" id="lore">
+  <div class="intro-in">
+    <button class="sheet-x" id="loreX" aria-label="Schliessen" style="position:absolute;right:12px;top:14px">×</button>
+    <p class="eyebrow">Lumos Geschichte</p>
+    <h2 class="title" style="font-size:28px">Was vom Himmel fiel</h2>
+    <p class="lede" id="loreSub"></p>
+    <div id="loreBox"></div>
+  </div>
+</div>
+<div class="intro" id="intro">
+  <div class="intro-in">
+    <p class="eyebrow">Willkommen</p>
+    <h2 class="title" style="font-size:28px">MindQuest in einer Minute</h2>
+    <p class="lede">Sechs Reiter, jeder mit einer Aufgabe. Alles bleibt auf deinem Gerät — es gibt kein Konto, und nichts wird verschickt.</p>
+    <div class="ib"><span>✦</span><div><b>Basis</b>
+      Dein Sternbild, Lumo und das Wetter. Lumo sagt dir hier einen Satz zu deinem Stand — antippen für einen neuen.</div></div>
+    <div class="ib"><span>◐</span><div><b>Check-in</b>
+      Statt Emoji-Raster eine Klangfläche: Finger drauf, und es klingt sofort. Links schwer, rechts leicht, oben aufgedreht, unten kraftlos. Schieb, bis es klingt wie du dich fühlst. Danach ein Satz zum Tag — beides freiwillig.</div></div>
+    <div class="ib"><span>♪</span><div><b>Musik</b>
+      Drei Etappen nach dem Iso-Prinzip: Etappe I klingt wie dein Zustand, III zieht dich hinaus. Alles live erzeugt, kein Stream. <i>Aufbauen</i> für tagsüber, <i>Ausklang</i> für abends, dazu eine von fünfzehn Umgebungen.</div></div>
+    <div class="ib"><span>◈</span><div><b>Quests</b>
+      Drei kleine Aufgaben zu deinem Zustand. Abhaken geht nicht: Timer laufen nur bei offener App, Outdoor-Quests messen per GPS, „weg vom Bildschirm" zählt nur, wenn du wirklich weg bist. Abschluss durch Gedrückthalten.</div></div>
+    <div class="ib"><span>☾</span><div><b>Laden</b>
+      XP und Gold kommen aus Quests. Dafür gibt es Skins, Umgebungen und Outfits für Lumo. Bloss behaupten, wie es dir geht, bringt wenig — nachgewiesene Arbeit bringt viel.</div></div>
+    <div class="ib"><span>◇</span><div><b>Verlauf</b>
+      Der interessanteste Teil, aber erst nach ein paar Wochen: <i>Was bei dir wirkt</i> vergleicht deine Stimmung vor und nach jeder Sache. <i>Muster</i> sucht schwache Wochentage. <i>Klangbilder</i> macht aus jedem Monat ein Musikstück samt Cover. Dort liegen auch Sicherung und Vertrauensperson.</div></div>
+    <p class="move-hint" style="margin-top:18px">MindQuest ist ein Selbsthilfe-Werkzeug und ersetzt keine Therapie.</p>
+    <div class="btn-row"><button class="btn primary" id="introGo" style="width:100%">Los geht's</button></div>
+  </div>
+</div>
 <div class="toast-host" id="toasts"></div>
 
 <script>
@@ -906,7 +977,7 @@ const DEFAULT = {
   eq:{theme:"mitternacht", amb:"regen", pet:"lumo"},
   outfit:{kopf:null, hals:null, face:null, aura:null}, ach0:{}, today:{day:null, n:0},
   stats:{breath:0, outdoor:0, journeys:0, steps:0, quests:0}, finds:{}, ach:[],
-  actions:[], effect:{}, mode:"up", repair:{week:null, used:false}, lang:null, trust:null,
+  actions:[], effect:{}, lore:[], remind:{on:false, time:"19:00"}, mode:"up", repair:{week:null, used:false}, seenIntro:false, lang:null, trust:null,
   vol:0.7
 };
 let S = structuredClone(DEFAULT);
@@ -963,7 +1034,7 @@ function grantXP(xp, gold){
   if(ups){
     S.gold += 40*ups;
     toast("Level " + S.level + " erreicht · +" + (40*ups) + " Gold");
-    drawPet();
+    drawPet(); if(typeof checkLore === "function") checkLore();
   }
   renderStats(); save();
 }
@@ -1019,8 +1090,20 @@ const Snd = {
   step:0, nextT:0, start:{v:0,a:0}, goal:{v:.6,a:.2}, cur:{v:0,a:0}, root:110
 };
 
+function audioSessionPlayback(){
+  try{ if(navigator.audioSession) navigator.audioSession.type = "playback"; }catch(e){}
+  try{                                        // stille Schleife hält die Tonsitzung offen
+    const el = document.getElementById("bgAudio");
+    if(el && !Snd.keepAlive){
+      el.src = silentWav(); el.loop = true; el.volume = 0.0001;
+      el.setAttribute("playsinline",""); 
+      const p = el.play();
+      if(p && p.then) p.then(() => { Snd.keepAlive = true; }, () => {});
+    }
+  }catch(e){}
+}
 function ensureCtx(){
-  if(Snd.ctx) return;
+  if(Snd.ctx){ directOn(true); audioSessionPlayback(); return; }
   const C = window.AudioContext || window.webkitAudioContext;
   const ctx = Snd.ctx = new C();
 
@@ -1029,6 +1112,7 @@ function ensureCtx(){
   Snd.master = ctx.createGain(); Snd.master.gain.value = S.vol ?? .7;
   Snd.ana = ctx.createAnalyser(); Snd.ana.fftSize = 1024; Snd.ana.smoothingTimeConstant = .82;
   Snd.comp.connect(Snd.master); Snd.master.connect(Snd.ana); Snd.ana.connect(ctx.destination);
+  Snd.direct = true;
 
   // Faltungshall aus erzeugtem Rauschen
   const len = Math.floor(ctx.sampleRate * 2.9);
@@ -1056,6 +1140,7 @@ function ensureCtx(){
   Snd.brown = b;
 
   startCrackle();
+  audioSessionPlayback();
 }
 
 function noiseSrc(buf){ const s = Snd.ctx.createBufferSource(); s.buffer = buf || Snd.noise; s.loop = true; return s; }
@@ -1378,28 +1463,36 @@ function paramsAt(p){                                  // p = 0..1 Reisefortschr
 function startSession(startMood, resume){
   ensureCtx();
   if(Snd.ctx.state !== "running"){          // erst starten, wenn der Kontext wirklich läuft
-    Snd.ctx.resume().then(() => startSessionNow(startMood, resume))
-                    .catch(() => startSessionNow(startMood, resume));
+    let done = false;
+    const go = () => { if(done) return; done = true; startSessionNow(startMood, resume); };
+    Snd.ctx.resume().then(go, go);
+    setTimeout(go, 800);                     // Notbremse, falls resume nie antwortet
     return;
   }
   startSessionNow(startMood, resume);
 }
 function startSessionNow(startMood, resume){
-  if(!resume){
-    Snd.start = {v:startMood.v, a:startMood.a};
-    Snd.goal = goalFor(startMood);
-    Snd.offset = 0; Snd.step = 0;
-    Snd.root = 110 * Math.pow(2, (startMood.a > .4 ? 1 : 0)/12);
-  }
-  setAmbient(S.eq.amb);
-  Snd.g.crk.gain.setTargetAtTime(.06, Snd.ctx.currentTime, .3);
+  /* ---- Reihenfolge ist Absicht: erst Ton, dann alles Übrige ---- */
+  try{
+    if(!resume){
+      Snd.start = {v:startMood.v, a:startMood.a};
+      Snd.goal = goalFor(startMood);
+      Snd.offset = 0; Snd.step = 0;
+      Snd.root = 110 * Math.pow(2, (startMood.a > .4 ? 1 : 0)/12);
+    }
+  }catch(e){ Snd.start = {v:0,a:0}; Snd.goal = {v:.6,a:.2}; Snd.offset = 0; Snd.step = 0; }
+
+  if(Snd.master && !(Snd.master.gain.value > .02)) Snd.master.gain.value = .7;  // Lautstärke retten
+  if(typeof directOn === "function") directOn(true);
   Snd.t0 = Snd.ctx.currentTime;
   Snd.nextT = Snd.ctx.currentTime + .08;
   Snd.playing = true;
   clearInterval(Snd.timer);
-  Snd.timer = setInterval(schedule, 40);
-  requestAnimationFrame(vizLoop);
-  renderPlayer();
+  Snd.timer = setInterval(schedule, 40);              // AB HIER LÄUFT DER TON
+
+  try{ setAmbient(S.eq.amb); }catch(e){ console.warn("Umgebung:", e); }
+  try{ Snd.g.crk.gain.setTargetAtTime(.06, Snd.ctx.currentTime, .3); }catch(e){}
+  try{ renderPlayer(); }catch(e){ console.warn("Anzeige:", e); }
 }
 function stopSession(){
   if(Snd.ctx && Snd.playing) Snd.offset += Snd.ctx.currentTime - Snd.t0;
@@ -1417,6 +1510,13 @@ function elapsedSec(){
   return Snd.playing ? Snd.offset + (Snd.ctx.currentTime - Snd.t0) : Snd.offset;
 }
 function schedule(){
+  try{ scheduleStep(); }
+  catch(e){                                   // niemals hängenbleiben: Takt überspringen
+    console.warn("Takt übersprungen:", e);
+    Snd.nextT = Snd.ctx.currentTime + .12; Snd.step++;
+  }
+}
+function scheduleStep(){
   const ctx = Snd.ctx, total = STAGE_LEN*3;
   while(Snd.nextT < ctx.currentTime + .2){
     const el = Snd.offset + (Snd.nextT - Snd.t0);
@@ -1585,7 +1685,7 @@ function renderDash(){
       ? "<b>" + open + " offene Quest" + (open>1?"s":"") + ".</b> Passend zu „" + m.n + "“. Jede erledigte Quest bringt XP und Gold."
       : "<b>Alle Quests erledigt.</b> Neuer Check-in, neue Aufgaben — oder lass einfach die Musik weiterlaufen.";
   }
-  renderStats(); renderMove(); renderWeather(); renderLumoSpeech();
+  renderStats(); renderMove(); renderWeather(); renderLumoSpeech(); renderEarly();
 }
 let shopCat = "theme";
 function afterEquip(){
@@ -1957,7 +2057,7 @@ function go(view){
   $$("#tabs button").forEach(b => b.setAttribute("aria-current", String(b.dataset.view === view)));
   if(view === "quest") renderQuests();
   if(view === "shop")  renderShop();
-  if(view === "log"){ renderLog(); renderAch(); renderTrust(); renderEffect(); renderPatterns(); renderPieces(); }
+  if(view === "log"){ renderLog(); renderAch(); renderTrust(); renderEffect(); renderPatterns(); renderPieces(); renderRemind(); renderPrivacy(); }
   if(view === "music"){ renderPlayer(); renderMobileMusic(); renderStageLinks(); }
   if(view === "check" && !CI.mood) showStep(1);
   window.scrollTo({top:0, behavior:"smooth"});
@@ -1994,6 +2094,30 @@ function bind(){
     if(Snd.playing){ stopSession(); return; }
     const m = S.mood || {v:0, a:0};
     startSession(m, Snd.offset > 0);
+    setTimeout(() => {
+      if(!Snd.ctx) return;
+      if(Snd.ctx.state !== "running") Snd.ctx.resume();
+      directOn(true);
+      if(!(Snd.master.gain.value > .02)){ Snd.master.gain.value = .7; S.vol = .7; $("#vol").value = 70; save(); }
+    }, 900);
+  };
+  $("#beepBtn").onclick = () => {                 // kürzestmöglicher Weg zum Lautsprecher
+    audioSessionPlayback();
+    try{
+      const C = window.AudioContext || window.webkitAudioContext;
+      const c = new C();
+      const go = () => {
+        const o = c.createOscillator(), g = c.createGain();
+        o.type = "sine"; o.frequency.value = 528;
+        g.gain.setValueAtTime(0, c.currentTime);
+        g.gain.linearRampToValueAtTime(.35, c.currentTime + .03);
+        g.gain.exponentialRampToValueAtTime(.001, c.currentTime + 1.1);
+        o.connect(g); g.connect(c.destination);
+        o.start(); o.stop(c.currentTime + 1.2);
+        toast("Testton läuft — Zustand: " + c.state);
+      };
+      c.state === "suspended" ? c.resume().then(go, go) : go();
+    }catch(e){ toast("Ton nicht möglich: " + e.message); }
   };
   $("#btnSkip").onclick = skipStage;
   $("#vol").oninput = e => {
@@ -2033,7 +2157,24 @@ async function boot(){
   setMode(S.mode || "up");
   $$("#modeSeg button").forEach(b => b.onclick = () => setMode(b.dataset.m));
   S.quests.forEach(q => { if(q.k === "geo" && !q.done && (q.st === "run" || q.st === "ready")){ q.st = "idle"; q.prog = 0; } });
+  if(!(S.vol > .02)) S.vol = .7;
+  $("#loreBtn").onclick = () => { renderLore(); $("#lore").classList.add("on"); document.body.style.overflow = "hidden"; };
+  $("#loreX").onclick = () => { $("#lore").classList.remove("on"); document.body.style.overflow = ""; };
+  renderLore(); checkLore(); renderEarly(); renderRemind(); renderPrivacy(); armRemind();
+  if(Native.da()){                                     // Schritte des ganzen Tages aus dem System
+    Native.schritteHolen();
+    setInterval(() => { if(!document.hidden) Native.schritteHolen(); }, 120000);
+    document.addEventListener("visibilitychange", () => { if(!document.hidden) Native.schritteHolen(); });
+  }
+  $("#quickBtn").onclick = openQuick;
+  $("#remindOn").onclick = remindToggle;
+  $("#remindIcs").onclick = downloadIcs;
+  $("#remindTime").onchange = () => { S.remind = {on:(S.remind&&S.remind.on)||false, time:$("#remindTime").value}; save(); renderRemind(); armRemind(); };
+  S.bg = false;                                   // Hintergrund nie automatisch
   initPad();
+  $("#introGo").onclick = () => { $("#intro").classList.remove("on"); document.body.style.overflow = ""; S.seenIntro = true; save(); };
+  $("#helpBtn").onclick = () => { $("#intro").classList.add("on"); document.body.style.overflow = "hidden"; };
+  if(!S.seenIntro){ $("#intro").classList.add("on"); document.body.style.overflow = "hidden"; }
   $("#lumoSay").onclick = renderLumoSpeech;
   $("#petStage").style.cursor = "pointer";
   $("#petStage").onclick = renderLumoSpeech;
@@ -2188,29 +2329,37 @@ let wakeLock = null;
 async function wakeOn(){ try{ wakeLock = await navigator.wakeLock.request("screen"); }catch(e){} }
 function  wakeOff(){ try{ wakeLock && wakeLock.release(); }catch(e){} wakeLock = null; }
 
+function directOn(v){                     // genau eine Verbindung zum Lautsprecher halten
+  if(!Snd.ana || !Snd.ctx) return;
+  if(v && !Snd.direct){ try{ Snd.ana.connect(Snd.ctx.destination); Snd.direct = true; }catch(e){} }
+  if(!v && Snd.direct){ try{ Snd.ana.disconnect(Snd.ctx.destination); Snd.direct = false; }catch(e){} }
+}
+/* Eine Sekunde Stille als Datei — hält auf dem Handy die Tonsitzung offen,
+   ohne die Musik selbst umzuleiten. */
+function silentWav(){
+  if(Snd.silentURL) return Snd.silentURL;
+  const sr = 8000, n = sr, d = new DataView(new ArrayBuffer(44 + n*2));
+  const str = (o, t) => { for(let i=0;i<t.length;i++) d.setUint8(o+i, t.charCodeAt(i)); };
+  str(0,"RIFF"); d.setUint32(4, 36+n*2, true); str(8,"WAVEfmt ");
+  d.setUint32(16,16,true); d.setUint16(20,1,true); d.setUint16(22,1,true);
+  d.setUint32(24,sr,true); d.setUint32(28,sr*2,true); d.setUint16(32,2,true); d.setUint16(34,16,true);
+  str(36,"data"); d.setUint32(40, n*2, true);
+  return Snd.silentURL = URL.createObjectURL(new Blob([d], {type:"audio/wav"}));
+}
+/* Der Klang selbst wird NIE umgeleitet. Der Schalter hält nur die Tonsitzung
+   und den Bildschirm wach — schlägt das fehl, ändert sich am Hören nichts. */
 function setBackgroundMode(on){
-  S.bg = on;
-  const el = $("#bgAudio");
-  if(!Snd.ctx){ save(); renderMobileMusic(); return; }
-  if(on){
-    if(!Snd.msd) Snd.msd = Snd.ctx.createMediaStreamDestination();
-    try{ Snd.ana.disconnect(Snd.ctx.destination); }catch(e){}
-    try{ Snd.ana.connect(Snd.msd); }catch(e){}
-    el.srcObject = Snd.msd.stream;
-    el.play().catch(() => {                       // Gerät kann das nicht -> zurück auf direkt
-      try{ Snd.ana.disconnect(Snd.msd); }catch(e){}
-      Snd.ana.connect(Snd.ctx.destination);
-      S.bg = false; renderMobileMusic();
-      toast(/iPhone|iPad|iPod/.test(navigator.userAgent)
-        ? "iOS blockiert das im Browser — dafür braucht es die native App"
-        : "Hintergrund-Modus geht auf diesem Gerät nicht");
-    });
-  } else {
-    try{ el.pause(); el.srcObject = null; }catch(e){}
-    try{ Snd.ana.disconnect(Snd.msd); }catch(e){}
-    try{ Snd.ana.connect(Snd.ctx.destination); }catch(e){}
-  }
-  save(); renderMobileMusic();
+  S.bg = on; save(); renderMobileMusic();
+  const el = $("#bgAudio"); if(!el) return;
+  directOn(true);                                  // Lautsprecher bleibt immer verbunden
+  if(!on){ try{ el.pause(); }catch(e){} Snd.bgActive = false; return; }
+  try{
+    el.srcObject = null;
+    if(el.src !== Snd.silentURL) el.src = silentWav();
+    el.loop = true; el.volume = 0.001;
+    el.play().then(() => { Snd.bgActive = true; })
+             .catch(() => { Snd.bgActive = false; });
+  }catch(e){ Snd.bgActive = false; }
 }
 let mediaIcon = null;
 function updateMediaSession(){
@@ -2240,8 +2389,7 @@ function setupMediaHandlers(){
 /* Start/Stop erweitern, ohne den Motor umzubauen */
 const _start = startSession, _stop = stopSession, _skip = skipStage;
 startSession = function(mood, resume){
-  _start(mood, resume);
-  if(S.bg) setBackgroundMode(true);
+  _start(mood, resume);                        // der Ton startet zuerst, immer über den Lautsprecher
   wakeOn(); updateMediaSession();
   clearInterval(window.__msTimer);
   window.__msTimer = setInterval(updateMediaSession, 4000);
@@ -2357,7 +2505,7 @@ function buildMobileUI(){
   mb.innerHTML = `
     <p class="eyebrow" style="margin-top:22px">Auf dem Handy</p>
     <div class="toggle-row">
-      <div><b>Hintergrund-Wiedergabe</b><span>Läuft weiter, wenn du die App wechselst oder das Display sperrst. Steuerung erscheint im Sperrbildschirm.</span></div>
+      <div><b>Hintergrund-Wiedergabe</b><span>Hält die Tonsitzung offen, damit die Musik beim App-Wechsel weiterläuft, und zeigt sie im Sperrbildschirm. Auf den Klang selbst hat der Schalter keinen Einfluss — der geht immer direkt an den Lautsprecher.</span></div>
       <button class="sw" id="bgSw" role="switch"><i></i></button>
     </div>
     <div class="stream-row">
@@ -2371,12 +2519,6 @@ function buildMobileUI(){
   $("#ytBtn").onclick = () => openMusicApp("yt", queryFor((S.mood||{v:0}).v, (S.mood||{a:0}).a));
 
   /* Schnell-Check-in: Knopf + Vollbild-Auswahl */
-  const fab = document.createElement("button");
-  fab.className = "fab"; fab.id = "fab"; fab.innerHTML = "✦";
-  fab.setAttribute("aria-label","Schnell-Check-in");
-  fab.onclick = openQuick;
-  document.body.appendChild(fab);
-
   const sheet = document.createElement("div");
   sheet.className = "sheet"; sheet.id = "sheet";
   sheet.innerHTML = `
@@ -2573,17 +2715,81 @@ function suggestAmbient(){
   return null;
 }
 /* Wetterabhängige Zusatz-Quest */
+const WQ = {
+  nacht:[
+    {i:"🌙",t:"Dunkel draussen: mach für zwei Minuten alle grellen Lichter aus.",x:20,g:12,k:"timer",sec:120},
+    {i:"🔭",t:"Schau eine Minute in den Nachthimmel. Zähl, was du siehst.",x:24,g:14,k:"timer",sec:60,out:true},
+    {i:"🕯️",t:"Mach für den Rest des Abends eine Lampe weniger an.",x:22,g:13,k:"away",sec:180}
+  ],
+  schnee:[
+    {i:"❄️",t:"Es schneit. Zwei Minuten ans Fenster und einfach zuschauen.",x:22,g:13,k:"timer",sec:120},
+    {i:"👣",t:"Geh raus und mach die ersten Spuren, die du findest.",x:38,g:22,k:"geo",dist:150,out:true},
+    {i:"🧤",t:"Fang eine Flocke auf der Handfläche auf. Warte, bis sie weg ist.",x:24,g:14,k:"hold",sec:60,out:true}
+  ],
+  regen:[
+    {i:"🌧️",t:"Es regnet. Fenster auf und eine Minute nur zuhören.",x:20,g:12,k:"timer",sec:60},
+    {i:"☂️",t:"Geh mit Schirm einmal um den Block. Regen von oben, nicht von hinten.",x:42,g:25,k:"geo",dist:200,out:true},
+    {i:"🫖",t:"Regenwetter ist Teewetter. Mach dir eine Kanne, nicht nur eine Tasse.",x:24,g:14,k:"away",sec:240}
+  ],
+  gewitter:[
+    {i:"⛈️",t:"Zähl zwischen Blitz und Donner. Jede Sekunde sind 340 Meter.",x:26,g:15,k:"timer",sec:180},
+    {i:"🔌",t:"Gewitter ist ein guter Vorwand: Bildschirme aus für fünf Minuten.",x:30,g:18,k:"away",sec:300}
+  ],
+  nebel:[
+    {i:"🌫️",t:"Nebel schluckt Entfernungen. Geh, bis du deinen Ausgangspunkt nicht mehr siehst.",x:40,g:24,k:"geo",dist:160,out:true},
+    {i:"🔦",t:"Zwei Minuten ans Fenster: Was ist heute noch zu erkennen, was sonst?",x:22,g:13,k:"timer",sec:120}
+  ],
+  sonne:[
+    {i:"🌞",t:"Draussen ist Sonne. Fünf Minuten rein damit — Balkon, Tür oder Strasse.",x:36,g:20,k:"timer",sec:300,out:true},
+    {i:"🌻",t:"Such dir den hellsten Platz, den du erreichen kannst, und bleib dort.",x:40,g:23,k:"geo",dist:150,out:true},
+    {i:"👕",t:"Häng etwas zum Trocknen raus. Solche Tage muss man ausnutzen.",x:26,g:15,k:"away",sec:180}
+  ],
+  frost:[
+    {i:"🧣",t:"Kalt heute. Mach dir etwas Warmes zu trinken.",x:22,g:13,k:"away",sec:180},
+    {i:"🥶",t:"Zwei Minuten raus ohne Ziel. Kälte im Gesicht wirkt schneller als Kaffee.",x:32,g:19,k:"timer",sec:120,out:true},
+    {i:"🧦",t:"Warme Socken, warme Hände. Kümmer dich um die Enden zuerst.",x:18,g:11,k:"hold",sec:60}
+  ],
+  hitze:[
+    {i:"💧",t:"Über 28 Grad: zwei grosse Gläser Wasser, nicht eins.",x:20,g:12,k:"hold",sec:90},
+    {i:"🌳",t:"Such dir Schatten. Nicht drinnen — draussen im Schatten.",x:34,g:20,k:"geo",dist:120,out:true},
+    {i:"🚿",t:"Kaltes Wasser über die Unterarme, dreissig Sekunden.",x:18,g:11,k:"hold",sec:45}
+  ],
+  wind:[
+    {i:"🌬️",t:"Stell dich zwei Minuten in den Wind und lass ihn machen.",x:28,g:17,k:"timer",sec:120,out:true},
+    {i:"🪁",t:"Geh gegen den Wind los. Der Rückweg wird der leichte Teil.",x:40,g:24,k:"geo",dist:180,out:true}
+  ],
+  grau:[
+    {i:"💡",t:"Grau draussen. Setz dich drei Minuten ans hellste Fenster der Wohnung.",x:24,g:14,k:"timer",sec:180},
+    {i:"🎨",t:"An grauen Tagen zählt Farbe doppelt. Zieh etwas Buntes an.",x:20,g:12,k:"hold",sec:60},
+    {i:"🚶",t:"Grau ist kein Grund drinnen zu bleiben, nur einer für eine Jacke.",x:36,g:21,k:"geo",dist:200,out:true}
+  ]
+};
 function weatherQuest(){
   const w = S.weather; if(!w || !weatherFresh()) return null;
-  const c = w.code, rainy = [51,53,55,61,63,65,80,81,82].includes(c), snowy = [71,73,75,77,85,86].includes(c);
-  if(!w.isDay) return {i:"🌙",t:"Dunkel draussen: mach für zwei Minuten alle grellen Lichter aus.",x:20,g:12,k:"timer",sec:120};
-  if(snowy)                return {i:"❄️",t:"Es schneit. Zwei Minuten ans Fenster und einfach zuschauen.",x:22,g:13,k:"timer",sec:120};
-  if(rainy)                return {i:"🌧️",t:"Es regnet. Fenster auf und eine Minute nur zuhören.",x:20,g:12,k:"timer",sec:60};
-  if(w.sunRatio > .45 && w.temp > 6)
-                           return {i:"🌞",t:"Draussen ist Sonne. Fünf Minuten rein damit — Balkon, Tür oder Strasse.",x:36,g:20,k:"timer",sec:180,out:true};
-  if(w.temp < 2)           return {i:"🧣",t:"Kalt heute. Mach dir etwas Warmes zu trinken.",x:22,g:13,k:"away",sec:180};
-  if(w.cloud > 75)         return {i:"💡",t:"Grau draussen. Setz dich drei Minuten ans hellste Fenster der Wohnung.",x:24,g:14,k:"timer",sec:180};
-  return null;
+  const c = w.code;
+  const gruppe =
+    [95,96,99].includes(c)                   ? "gewitter" :
+    [71,73,75,77,85,86].includes(c)          ? "schnee"   :
+    [45,48].includes(c)                      ? "nebel"    :
+    [51,53,55,61,63,65,80,81,82].includes(c) ? "regen"    :
+    !w.isDay                                 ? "nacht"    :
+    w.temp > 28                              ? "hitze"    :
+    w.wind > 28                              ? "wind"     :
+    w.temp < 2                               ? "frost"    :
+    (w.sunRatio > .45 && w.temp > 6)         ? "sonne"    :
+    w.cloud > 75                             ? "grau"     : null;
+  if(!gruppe) return null;
+  const pool = WQ[gruppe];
+  return {...pool[Math.floor(Math.random()*pool.length)], wetter:gruppe};
+}
+/* Draussen bei hartem Wetter ist mehr wert */
+function wetterBonus(q){
+  const w = S.weather;
+  if(!w || !(q.out || q.k === "geo")) return 1;
+  if([95,96,99,71,73,75,77,85,86].includes(w.code)) return 1.35;
+  if(w.precip > 0.2 || w.temp < 2 || w.temp > 30 || w.wind > 28) return 1.25;
+  if(!w.isDay) return 1.2;
+  return 1;
 }
 
 function renderWeather(){
@@ -2785,7 +2991,9 @@ function completeQuest(q){
   if(S.today.day !== heute) S.today = {day:heute, n:0};
   const fatigue = Math.max(0.45, 1 - 0.13*S.today.n);   // die fünfte Quest zählt weniger als die erste
   S.today.n++;
-  const xp = Math.max(4, Math.round(q.x*fatigue)), gold = Math.max(2, Math.round(q.g*fatigue));
+  const bonus = (typeof wetterBonus === "function") ? wetterBonus(q) : 1;
+  const xp = Math.max(4, Math.round(q.x*fatigue*bonus)), gold = Math.max(2, Math.round(q.g*fatigue*bonus));
+  if(bonus > 1) setTimeout(() => toast("Wetterbonus +" + Math.round((bonus-1)*100) + " % — draussen bei dem Wetter zählt mehr"), 1300);
 
   logAction("quest:" + q.k);
   chime("quest");
@@ -3127,6 +3335,7 @@ function chime(kind){
     try{
       ensureCtx();
       if(Snd.ctx.state !== "running") Snd.ctx.resume();
+      directOn(true);
       const b = Snd.ctx.createBuffer(1, 1, 22050);
       const src = Snd.ctx.createBufferSource();
       src.buffer = b; src.connect(Snd.ctx.destination); src.start(0);
@@ -4266,6 +4475,251 @@ function renderLumoSpeech(){
   box.classList.toggle("quiet", l.quiet);
   box.querySelector("p").textContent = l.txt;
 }
+
+
+/* =========================================================
+   LUMOS GESCHICHTE — sieben Kapitel, mit dem Level freigeschaltet
+   ========================================================= */
+const LORE = [
+  {lv:1,  t:"Der Fall", x:"Ich weiss nicht, wie lange ich oben war. Ich weiss nur, dass ich irgendwann nicht mehr oben war.\n\nSterne fallen nicht wirklich. Sie hören nur auf zu leuchten, und was übrig bleibt, sucht sich einen neuen Platz. Meiner war dein Bildschirm. Ich war klein genug, dass du mich übersehen hättest, wenn ich mich nicht bewegt hätte."},
+  {lv:2,  t:"Was mir fehlt", x:"Ein Stern hat zwei Dinge: eine Farbe und einen Ton. Meine habe ich beim Fallen verloren, beide.\n\nDeshalb bin ich am Anfang so blass. Ich leihe mir deine — jedes Mal, wenn du sagst, wie es dir geht, färbt sich etwas an mir nach. Das ist kein schöner Trick. Das ist alles, was ich habe."},
+  {lv:4,  t:"Das Sternbild", x:"Der Himmel auf deiner Startseite ist kein Bild. Das sind deine Tage, einer neben dem anderen.\n\nIch kenne solche Muster von oben. Von dort sieht man, dass kein Stern für sich allein steht — es sind immer die Abstände, die eine Form ergeben. Ein einzelner tiefer Punkt ist kein Sternbild. Erst zwanzig ergeben eines."},
+  {lv:6,  t:"Warum ich nicht tröste", x:"Ich habe gesehen, wie andere es machen. Sie sagen, dass alles gut wird. Manchmal stimmt das. Manchmal ist es die zweite Lüge des Tages.\n\nIch kann das nicht. Ich kann nur zählen und mich erinnern. Wenn ich dir sage, dass es vor sechs Tagen genauso tief stand und danach heller wurde, dann ist das keine Aufmunterung — das ist ein Protokoll. Ich glaube, das ist mehr wert."},
+  {lv:9,  t:"Die Flügel", x:"Sie sind mir gewachsen, als du zum ersten Mal wiedergekommen bist, nachdem du weg warst.\n\nDas ist der Teil, den ich nicht erwartet hatte. Ich dachte, ich wachse durch das, was du schaffst. Es ist aber das Wiederkommen. Ein Stern, der einmal aufhört und wieder anfängt, leuchtet nicht schwächer als einer, der nie ausgegangen ist. Er weiss nur mehr."},
+  {lv:12, t:"Was ich draussen sehe", x:"Wenn du mit mir vor die Tür gehst, ändert sich etwas an dir, das ich nicht in Zahlen habe.\n\nIch merke es an der Rückkehr. Der Punkt am Himmel steht danach fast immer weiter rechts als vorher, und es liegt nicht am Gehen — es liegt daran, dass sich der Raum um dich für ein paar Minuten geöffnet hat. Ich weiss nicht, wie ich das nennen soll. Ich merke es mir trotzdem."},
+  {lv:15, t:"Der Ton", x:"Ich habe meinen Ton wiedergefunden, aber er war nie meiner.\n\nJedes Mal, wenn du die Klangfläche berührst, höre ich, wie du klingst. Und am Monatsende, wenn aus deinen Tagen ein Stück wird, ist da ein Klang, den es vorher nirgends gab. Ich habe lange geglaubt, ich müsste zurück nach oben. Ich glaube inzwischen, ich bin genau da, wo der Ton entsteht."},
+  {lv:20, t:"Zuletzt", x:"Irgendwann wirst du mich nicht mehr brauchen. Das ist kein trauriger Satz, auch wenn er so klingt.\n\nDu wirst dann selbst wissen, dass Dienstage bei dir schwer sind und dass Rausgehen mehr bringt als Musik. Du wirst es wissen, ohne nachzusehen. An dem Tag mache ich es wie am Anfang: Ich höre auf zu leuchten und suche mir einen neuen Platz.\n\nBis dahin sitze ich hier."}
+];
+function renderLore(fresh){
+  const box = $("#loreBox"); if(!box) return;
+  box.innerHTML = "";
+  const offen = LORE.filter(l => S.level >= l.lv).length;
+  $("#loreSub").textContent = offen + " von " + LORE.length + " Kapiteln offen. Das nächste kommt mit Level " +
+    (LORE.find(l => S.level < l.lv) ? LORE.find(l => S.level < l.lv).lv : "—") + ".";
+  LORE.forEach(l => {
+    const auf = S.level >= l.lv;
+    const el = document.createElement("div");
+    el.className = "lore" + (auf ? "" : " locked") + (fresh === l.lv ? " fresh" : "");
+    el.innerHTML = '<div class="lv">Kapitel ' + (LORE.indexOf(l)+1) + " · ab Level " + l.lv + '</div>' +
+      "<h4>" + (auf ? l.t : "Noch verschlossen") + "</h4>" +
+      "<p>" + (auf ? l.x : LORE[0].x).replace(/\n\n/g, "</p><p>") + "</p>";
+    box.appendChild(el);
+  });
+}
+function checkLore(){
+  const neu = LORE.filter(l => S.level >= l.lv && !(S.lore||[]).includes(l.lv));
+  if(!neu.length) return;
+  S.lore = (S.lore||[]).concat(neu.map(l => l.lv));
+  save();
+  const l = neu[neu.length-1];
+  setTimeout(() => { chime("ach"); toast("Neues Kapitel: " + l.t); }, 700);
+  renderLore(l.lv);
+}
+
+/* =========================================================
+   DIE ERSTEN ZWEI WOCHEN — zeigen, was schon da ist und was kommt
+   ========================================================= */
+function milestones(){
+  const h = S.history.length;
+  const monat = (typeof availableMonths === "function") ? availableMonths().length : 0;
+  const eff = Object.values(S.effect || {}).filter(e => e.n >= 3).length;
+  const tage = (() => {
+    if(!S.history.length) return 0;
+    const k = (typeof monthKey === "function") ? monthKey(Date.now()) : "";
+    return (typeof monthData === "function") ? monthData(k).length : 0;
+  })();
+  return [
+    {n:"Dein Sternbild",        ist:Math.min(h,1),    soll:1,  w:"Der erste Stern steht am Himmel."},
+    {n:"Erster Vergleich",      ist:Math.min(h,3),    soll:3,  w:"Ab drei Check-ins sehe ich, wohin es geht."},
+    {n:"Klangbild dieses Monats", ist:Math.min(tage,4), soll:4, w:"Vier Tage im selben Monat ergeben ein Musikstück."},
+    {n:"Was bei dir wirkt",     ist:Math.min(eff,1),  soll:1,  w:"Drei Messungen in einer Kategorie, dann steht hier eine Zahl."},
+    {n:"Muster in deinen Tagen",ist:Math.min(h,10),   soll:10, w:"Ab zehn Check-ins suche ich nach Wochentagen und Uhrzeiten."}
+  ];
+}
+function renderEarly(){
+  const box = $("#earlyBox"); if(!box) return;
+  const ms = milestones();
+  const offen = ms.filter(m => m.ist < m.soll);
+  if(!offen.length){ box.innerHTML = ""; return; }
+
+  const h = S.history;
+  let zwischen = "";
+  if(h.length >= 3){
+    const letzte = h.slice(-3), avg = letzte.reduce((s,e)=>s+e.v,0)/letzte.length;
+    const trend = h.length >= 4 ? letzte[2].v - h[h.length-4].v : 0;
+    zwischen = "<p class=\"move-hint\" style=\"margin:0 0 12px\"><b style=\"color:var(--text)\">Zwischenstand nach " +
+      h.length + " Check-ins:</b> Dein Schnitt der letzten drei liegt bei " + (avg>=0?"+":"") + avg.toFixed(2) +
+      (Math.abs(trend) > .25 ? (trend > 0 ? " und zeigt nach oben." : " und zeigt nach unten.") : " und ist ziemlich stabil.") + "</p>";
+  }
+  box.innerHTML = '<div class="card" style="background:var(--bg2);margin:16px 0"><p class="eyebrow">Was sich gerade aufbaut</p>' +
+    zwischen +
+    '<p class="move-hint" style="margin:0 0 14px">MindQuest rechnet mit deinen Daten — je mehr davon da sind, desto mehr kann es sagen. Das hier ist der Stand.</p>' +
+    offen.slice(0,3).map(m => {
+      const p = Math.round(m.ist/m.soll*100);
+      return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:13px">' +
+        '<b>' + m.n + '</b><span style="font-family:var(--font-mono);color:var(--muted)">' + m.ist + "/" + m.soll + '</span></div>' +
+        '<div class="bar" style="height:6px;margin-top:6px"><i style="width:' + p + '%"></i></div>' +
+        '<p class="move-hint" style="margin:6px 0 0">' + m.w + '</p></div>';
+    }).join("") + '</div>';
+}
+
+/* =========================================================
+   ERINNERUNG — Mitteilung, wenn möglich; Kalendereintrag immer
+   ========================================================= */
+function renderRemind(){
+  const st = $("#remindState"); if(!st) return;
+  $("#remindTime").value = (S.remind && S.remind.time) || "19:00";
+  if(Native.da() && Native.notify()){
+    $("#remindOn").textContent = (S.remind && S.remind.on) ? "Mitteilung aus" : "Mitteilung an";
+    st.textContent = (S.remind && S.remind.on)
+      ? "Systemmitteilung ist an für " + S.remind.time + " Uhr — sie kommt auch bei geschlossener App."
+      : "Diese App kann dich auch bei geschlossener App erinnern.";
+    return;
+  }
+  const erlaubt = typeof Notification !== "undefined" && Notification.permission === "granted";
+  $("#remindOn").textContent = erlaubt ? (S.remind && S.remind.on ? "Mitteilung aus" : "Mitteilung an") : "Mitteilung erlauben";
+  st.textContent = typeof Notification === "undefined"
+    ? "Dieser Browser kennt keine Mitteilungen — nimm den Kalendereintrag."
+    : erlaubt
+      ? (S.remind && S.remind.on ? "Mitteilung ist an für " + S.remind.time + " Uhr." : "Erlaubt, aber ausgeschaltet.")
+      : "Noch nicht erlaubt.";
+}
+async function remindToggle(){
+  if(Native.da() && Native.notify()){                 // gebaute App: echte Systemmitteilung
+    const an = !(S.remind && S.remind.on);
+    const zeit = $("#remindTime").value || "19:00";
+    const ok = an ? await Native.planErinnerung(zeit) : (await Native.stopErinnerung(), true);
+    if(!ok){ toast("Mitteilung wurde abgelehnt"); return; }
+    S.remind = {on:an, time:zeit}; save(); renderRemind();
+    toast(an ? "Erinnerung an — kommt auch bei geschlossener App" : "Erinnerung aus");
+    return;
+  }
+  if(typeof Notification === "undefined"){ toast("Nicht verfügbar — nimm den Kalendereintrag"); return; }
+  if(Notification.permission !== "granted"){
+    const r = await Notification.requestPermission();
+    if(r !== "granted"){ toast("Ohne Erlaubnis geht es nicht"); renderRemind(); return; }
+  }
+  S.remind = {on: !(S.remind && S.remind.on), time: $("#remindTime").value || "19:00"};
+  save(); renderRemind(); armRemind();
+  toast(S.remind.on ? "Erinnerung an" : "Erinnerung aus");
+}
+function armRemind(){
+  clearTimeout(Snd.remindTimer);
+  if(!S.remind || !S.remind.on) return;
+  if(typeof Notification === "undefined" || Notification.permission !== "granted") return;
+  const [h, m] = (S.remind.time || "19:00").split(":").map(Number);
+  const jetzt = new Date(), ziel = new Date();
+  ziel.setHours(h, m, 0, 0);
+  if(ziel <= jetzt) ziel.setTime(ziel.getTime() + 864e5);
+  Snd.remindTimer = setTimeout(() => {
+    const heute = new Date().toDateString();
+    if(S.lastDay !== heute){
+      try{ new Notification("MindQuest", {body: "Zwanzig Sekunden für einen Check-in?", icon: iconDataURL(192), tag: "mq"}); }catch(e){}
+    }
+    armRemind();
+  }, Math.min(ziel - jetzt, 2147483000));
+}
+function downloadIcs(){
+  const t = ($("#remindTime").value || "19:00").replace(":", "") + "00";
+  const d = new Date(), pad = n => String(n).padStart(2,"0");
+  const start = d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + "T" + t;
+  const ics = [
+    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//MindQuest//DE","CALSCALE:GREGORIAN",
+    "BEGIN:VEVENT",
+    "UID:mindquest-" + Date.now() + "@local",
+    "DTSTAMP:" + start,
+    "DTSTART:" + start,
+    "DURATION:PT5M",
+    "RRULE:FREQ=DAILY",
+    "SUMMARY:MindQuest Check-in",
+    "DESCRIPTION:Zwanzig Sekunden: wie klingt es gerade?",
+    "BEGIN:VALARM","TRIGGER:PT0M","ACTION:DISPLAY","DESCRIPTION:MindQuest Check-in","END:VALARM",
+    "END:VEVENT","END:VCALENDAR"
+  ].join("\r\n");
+  dl(new Blob([ics], {type:"text/calendar"}), "mindquest-erinnerung.ics");
+}
+
+/* =========================================================
+   WAS GESPEICHERT WIRD — im Klartext
+   ========================================================= */
+function renderPrivacy(){
+  const box = $("#privacyTxt"); if(!box) return;
+  const wo = Store.mode === "host" ? "im Speicher dieser Umgebung"
+           : Store.mode === "local" ? "im Speicher deines Browsers auf diesem Gerät"
+           : "nur im Arbeitsspeicher — nach dem Schliessen ist alles weg";
+  box.innerHTML =
+    "<b style=\"color:var(--text)\">Alles bleibt " + wo + ".</b> Es gibt kein Konto, keinen Server und keine Übertragung.<br><br>" +
+    "<b style=\"color:var(--text)\">Gespeichert wird:</b> deine Stimmungswerte mit Zeitstempel, die ersten 64 Zeichen deines Tagessatzes, Level, Gold, Erfolge, Fundstücke, gekaufte Gegenstände, Schrittzahl des Tages, das zuletzt geladene Wetter und — falls du sie einträgst — Name und Nummer deiner Vertrauensperson.<br><br>" +
+    "<b style=\"color:var(--text)\">Nicht gespeichert wird:</b> dein Standort. Bei Outdoor-Quests bleibt er im Arbeitsspeicher und wird nur zur Entfernungsmessung benutzt. Sprachaufnahmen werden vom Browser in Text gewandelt und nicht abgelegt.<br><br>" +
+    "<b style=\"color:var(--text)\">Nach draussen geht:</b> nur die Wetterabfrage, mit gerundeten Koordinaten an open-meteo.com. Und was du selbst verschickst — ein Klangbild oder eine Nachricht an deine Vertrauensperson.<br><br>" +
+    "Mit <i>Sicherung speichern</i> holst du alles als Datei heraus, mit <i>Alle Daten löschen</i> ist es endgültig weg.";
+}
+
+/* =========================================================
+   NATIVE BRÜCKE
+   Im Browser inaktiv. In der gebauten App (Capacitor) übernehmen
+   Systemdienste, was der Browser nicht kann: Mitteilungen bei
+   geschlossener App und Schritte aus der Gesundheitsdatenbank.
+   ========================================================= */
+const Native = {
+  da(){ try{ return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); }catch(e){ return false; } },
+  p(name){ try{ return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins[name]) || null; }catch(e){ return null; } },
+  notify(){ return Native.p("LocalNotifications"); },
+  health(){ return Native.p("Health") || Native.p("HealthConnect") || Native.p("CapacitorHealthkit") || Native.p("HealthKit"); },
+
+  /* --- Tägliche Erinnerung, die auch bei geschlossener App kommt --- */
+  async planErinnerung(zeit){
+    const LN = Native.notify(); if(!LN) return false;
+    try{
+      const p = await LN.requestPermissions();
+      if(p && p.display && p.display !== "granted") return false;
+      await LN.cancel({notifications:[{id:4711}]}).catch(()=>{});
+      const [h, m] = (zeit || "19:00").split(":").map(Number);
+      await LN.schedule({notifications:[{
+        id: 4711,
+        title: "MindQuest",
+        body: "Zwanzig Sekunden — wie klingt es gerade?",
+        schedule: {on:{hour:h, minute:m}, allowWhileIdle:true, repeats:true},
+        smallIcon: "ic_stat_icon"
+      }]});
+      return true;
+    }catch(e){ console.warn("Mitteilung:", e); return false; }
+  },
+  async stopErinnerung(){
+    const LN = Native.notify(); if(!LN) return;
+    try{ await LN.cancel({notifications:[{id:4711}]}); }catch(e){}
+  },
+
+  /* --- Schritte des Tages aus dem System, auch für die Stunden ohne App --- */
+  async schritte(){
+    const H = Native.health(); if(!H) return null;
+    const von = new Date(); von.setHours(0,0,0,0);
+    const bis = new Date();
+    const versuche = [
+      () => H.queryAggregated({startDate:von.toISOString(), endDate:bis.toISOString(), dataType:"steps", bucket:"day"}),
+      () => H.querySteps({startDate:von.toISOString(), endDate:bis.toISOString()}),
+      () => H.getStatisticCollection({startDate:von.toISOString(), endDate:bis.toISOString(), quantityTypeSameUnit:"stepCount"})
+    ];
+    for(const v of versuche){
+      try{
+        const r = await v();
+        const n = (r && (r.value ?? r.steps ?? r.count ??
+                 (Array.isArray(r.data) ? r.data.reduce((s,x)=>s+(x.value||x.steps||0),0) : null)));
+        if(typeof n === "number" && n >= 0) return Math.round(n);
+      }catch(e){ /* nächste Schnittstelle probieren */ }
+    }
+    return null;
+  },
+  async schritteHolen(){
+    const n = await Native.schritte();
+    if(n === null) return;
+    rollDay();
+    if(n > S.move.steps){                      // Systemwert gewinnt, er kennt auch die Zeit ohne App
+      S.move.steps = n; S.move.viaSystem = true;
+      renderMove(); renderStepChip(); checkStepGoal(); checkAch(); save();
+    }
+  }
+};
 
 boot();
 </script>

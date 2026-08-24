@@ -167,6 +167,68 @@ Unterordner dann automatisch. Einzelne Dateien anzuklicken zerstört die Struktu
 
 ---
 
+## Schritte und Erinnerungen bei geschlossener App
+
+Das kann eine Web-App grundsätzlich nicht — ein Browser läuft nicht weiter,
+wenn er zu ist. Die gebaute App kann es. Der Code dafür ist schon drin und
+schaltet sich von selbst ein, sobald die passenden Plugins vorhanden sind.
+
+### Erinnerungen
+
+```bash
+npm i @capacitor/local-notifications
+npx cap sync
+```
+
+Danach plant MindQuest die tägliche Erinnerung über das Betriebssystem
+(`allowWhileIdle`, täglich wiederholt). Sie kommt auch, wenn die App geschlossen
+ist. In der Web-Fassung bleibt der Kalendereintrag der zuverlässige Weg.
+
+Android braucht dafür in `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+```
+
+### Schritte des ganzen Tages
+
+Dafür brauchst du Zugriff auf die Gesundheitsdatenbank des Systems:
+**Health Connect** auf Android, **HealthKit** auf iOS. Beide liefern auch die
+Stunden, in denen die App gar nicht lief.
+
+Die Brücke im Code (`Native.schritte()`) probiert nacheinander die gängigen
+Schnittstellen `queryAggregated`, `querySteps` und `getStatisticCollection`
+durch und nimmt den ersten Wert, den sie bekommt. Damit passt sie auf die
+meisten Health-Plugins, ohne auf eines festgelegt zu sein.
+
+Such im npm-Verzeichnis nach einem aktuell gepflegten Capacitor-Health-Plugin
+(die Paketnamen wechseln häufiger als die Schnittstellen) und installiere es:
+
+```bash
+npm i <health-plugin>
+npx cap sync
+```
+
+Berechtigungen: Android braucht `android.permission.ACTIVITY_RECOGNITION`
+(setzt `scripts/android-manifest.sh` bereits) sowie die Health-Connect-Freigaben
+des Plugins. iOS braucht `NSHealthShareUsageDescription` in der `Info.plist`.
+
+Liefert kein Plugin einen Wert, zählt MindQuest weiter selbst über den
+Bewegungssensor — dann eben nur, solange die App offen ist. Nichts bricht.
+
+---
+
+## Wetterabhängige Quests
+
+Zehn Wetterlagen mit je zwei bis drei eigenen Quests: Gewitter, Schnee, Nebel,
+Regen, Nacht, Hitze, Wind, Frost, Sonne, Grau. Dazu ein Bonus auf XP und Gold
+für Draussen-Quests bei hartem Wetter — 35 % bei Gewitter und Schnee, 25 % bei
+Regen, Frost, Hitze und Sturm, 20 % nachts. Bei Gewitter, Starkregen oder
+Dunkelheit werden gefährliche Draussen-Quests dagegen gar nicht erst vergeben.
+
+---
+
 ## Icons austauschen
 
 `resources/icon.png` (1024×1024) und `resources/splash.png` ersetzen, dann:
