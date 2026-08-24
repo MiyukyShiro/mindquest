@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>MindQuest — The Sound of My Mind</title>
+<title>Lumo — The Sound of My Mind</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#0B0918">
@@ -465,13 +465,21 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
 .lore.locked p{filter:blur(3.5px);user-select:none;opacity:.5}
 .lore.locked .lv{color:var(--muted)}
 .lore.fresh{border-left:3px solid var(--accent);padding-left:14px;margin-left:-14px}
+
+/* Schliessen-Knopf für alle Vollbild-Ansichten: klebt oben rechts, immer erreichbar */
+.ovx{position:fixed;right:14px;top:calc(12px + env(safe-area-inset-top));z-index:120;
+  width:46px;height:46px;border-radius:50%;font-size:26px;line-height:1;
+  background:var(--panel);border:1px solid var(--edge);color:var(--text);
+  box-shadow:var(--shadow);display:grid;place-items:center;cursor:pointer}
+.ovx:hover{border-color:var(--accent);color:var(--accent)}
+.intro-in{position:relative}
 </style>
 </head>
 <body>
 
 <header class="top">
   <div class="top-in">
-    <div class="brand"><b>MindQuest</b><span>The Sound of My Mind</span></div>
+    <div class="brand"><b>Lumo</b><span>The Sound of My Mind</span></div>
     <div class="stats">
       <div class="chip xpwrap">
         <div style="flex:1">
@@ -523,7 +531,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
     <div class="card" style="margin-top:16px">
       <p class="eyebrow">So läuft eine Runde</p>
       <h2 class="title">Fühlen, hören, machen.</h2>
-      <p class="lede">Ein Check-in setzt deinen Stern ans Himmelszelt. Daraus baut MindQuest eine Musikreise nach dem Iso-Prinzip und drei SideQuests, die zu deinem Zustand passen. Erledigte Quests geben XP und Gold — davon lebt Lumo.</p>
+      <p class="lede">Ein Check-in setzt deinen Stern ans Himmelszelt. Daraus baut Lumo eine Musikreise nach dem Iso-Prinzip und drei SideQuests, die zu deinem Zustand passen. Erledigte Quests geben XP und Gold — davon lebt Lumo.</p>
       <div class="btn-row">
         <button class="btn primary" data-go="check">Check-in starten</button>
         <button class="btn" data-go="quest">Offene Quests <span id="questCount" style="font-family:var(--font-mono);color:var(--muted)">(0)</span></button>
@@ -564,7 +572,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
       <div id="step2" class="hidden">
         <p class="eyebrow">Optional</p>
         <h2 class="title">Tipp den Satz einmal ab.</h2>
-        <p class="lede">Nicht auf Fehler achten, nicht extra schnell sein. MindQuest misst nur den Rhythmus deiner Anschläge: Tempo, Gleichmässigkeit und wie oft du korrigierst.</p>
+        <p class="lede">Nicht auf Fehler achten, nicht extra schnell sein. Lumo misst nur den Rhythmus deiner Anschläge: Tempo, Gleichmässigkeit und wie oft du korrigierst.</p>
         <div class="type-target" id="typeTarget"></div>
         <input type="text" id="typeInput" placeholder="Hier tippen …" autocomplete="off" spellcheck="false">
         <div class="meters">
@@ -657,7 +665,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
         </div>
       </div>
       <div class="stage-links" id="stageLinks"></div>
-      <div class="note" id="musicNote"><b>Alles live erzeugt.</b> Kein Stream, keine Datei — MindQuest synthetisiert Bass, Pads, Melodie und Ambience in Echtzeit aus deinen Stimmungswerten. Deshalb klingt jede Reise anders.</div>
+      <div class="note" id="musicNote"><b>Alles live erzeugt.</b> Kein Stream, keine Datei — Lumo synthetisiert Bass, Pads, Melodie und Ambience in Echtzeit aus deinen Stimmungswerten. Deshalb klingt jede Reise anders.</div>
     </div>
   </section>
 
@@ -708,7 +716,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
       </div>
       <div class="card" id="remindBox" style="background:var(--bg2);margin:20px 0">
         <p class="eyebrow">Erinnerung</p>
-        <p class="move-hint" style="margin-bottom:12px">Ein Check-in dauert zwanzig Sekunden — man muss nur daran denken. Die Mitteilung funktioniert, solange MindQuest im Hintergrund liegt. Zuverlässig an jedem Tag ist der Kalendereintrag: den trägt dein Handy selbst ein, unabhängig von der App.</p>
+        <p class="move-hint" style="margin-bottom:12px">Ein Check-in dauert zwanzig Sekunden — man muss nur daran denken. Die Mitteilung funktioniert, solange Lumo im Hintergrund liegt. Zuverlässig an jedem Tag ist der Kalendereintrag: den trägt dein Handy selbst ein, unabhängig von der App.</p>
         <div class="wx-form">
           <input type="time" id="remindTime" value="19:00" style="max-width:140px">
           <button class="btn" id="remindOn">Mitteilung erlauben</button>
@@ -722,7 +730,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
       </div>
       <div class="card" id="trustBox" style="background:var(--bg2);margin:20px 0">
         <p class="eyebrow">Vertrauensperson</p>
-        <p class="move-hint" style="margin-bottom:12px">Eine Person, die du an schlechten Tagen mit einem Tipp erreichst. Name und Nummer bleiben auf diesem Gerät — MindQuest verschickt nichts von selbst und meldet nichts an niemanden.</p>
+        <p class="move-hint" style="margin-bottom:12px">Eine Person, die du an schlechten Tagen mit einem Tipp erreichst. Name und Nummer bleiben auf diesem Gerät — Lumo verschickt nichts von selbst und meldet nichts an niemanden.</p>
         <div class="wx-form">
           <input type="text" id="trustName" placeholder="Name" autocomplete="off">
           <input type="text" id="trustTel" placeholder="Telefonnummer" inputmode="tel" autocomplete="off">
@@ -749,6 +757,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
       <div class="btn-row">
         <button class="btn" id="expBtn">Sicherung speichern</button>
         <button class="btn" id="impBtn">Sicherung laden</button>
+        <button class="btn ghost" id="undoBtn">Letzten Check-in zurücknehmen</button>
         <button class="btn ghost" id="wipe">Alle Daten löschen</button>
       </div>
       <input type="file" id="impFile" accept="application/json,.json" class="hidden">
@@ -756,25 +765,26 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
   </section>
 
   <footer class="foot">
-    <span id="buildTag" style="font-family:var(--font-mono);letter-spacing:.1em">v15 · 2026-08-24</span><br>
-    MindQuest ist ein Selbsthilfe-Werkzeug und ersetzt keine Therapie.<br>
+    <span id="buildTag" style="font-family:var(--font-mono);letter-spacing:.1em">v17 · 2026-08-24</span><br>
+    Lumo ist ein Selbsthilfe-Werkzeug und ersetzt keine Therapie.<br>
     Wenn es dir länger schlecht geht, sprich mit jemandem, dem du vertraust, oder mit einer Fachperson.
   </footer>
 </div>
 
 <div class="intro" id="lore">
   <div class="intro-in">
-    <button class="sheet-x" id="loreX" aria-label="Schliessen" style="position:absolute;right:12px;top:14px">×</button>
+    <button class="ovx" id="loreX" aria-label="Schliessen">×</button>
     <p class="eyebrow">Lumos Geschichte</p>
     <h2 class="title" style="font-size:28px">Was vom Himmel fiel</h2>
     <p class="lede" id="loreSub"></p>
     <div id="loreBox"></div>
+    <div class="btn-row"><button class="btn primary" id="loreClose" style="width:100%">Schliessen</button></div>
   </div>
 </div>
 <div class="intro" id="intro">
   <div class="intro-in">
     <p class="eyebrow">Willkommen</p>
-    <h2 class="title" style="font-size:28px">MindQuest in einer Minute</h2>
+    <h2 class="title" style="font-size:28px">Lumo in einer Minute</h2>
     <p class="lede">Sechs Reiter, jeder mit einer Aufgabe. Alles bleibt auf deinem Gerät — es gibt kein Konto, und nichts wird verschickt.</p>
     <div class="ib"><span>✦</span><div><b>Basis</b>
       Dein Sternbild, Lumo und das Wetter. Lumo sagt dir hier einen Satz zu deinem Stand — antippen für einen neuen.</div></div>
@@ -788,7 +798,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
       XP und Gold kommen aus Quests. Dafür gibt es Skins, Umgebungen und Outfits für Lumo. Bloss behaupten, wie es dir geht, bringt wenig — nachgewiesene Arbeit bringt viel.</div></div>
     <div class="ib"><span>◇</span><div><b>Verlauf</b>
       Der interessanteste Teil, aber erst nach ein paar Wochen: <i>Was bei dir wirkt</i> vergleicht deine Stimmung vor und nach jeder Sache. <i>Muster</i> sucht schwache Wochentage. <i>Klangbilder</i> macht aus jedem Monat ein Musikstück samt Cover. Dort liegen auch Sicherung und Vertrauensperson.</div></div>
-    <p class="move-hint" style="margin-top:18px">MindQuest ist ein Selbsthilfe-Werkzeug und ersetzt keine Therapie.</p>
+    <p class="move-hint" style="margin-top:18px">Lumo ist ein Selbsthilfe-Werkzeug und ersetzt keine Therapie.</p>
     <div class="btn-row"><button class="btn primary" id="introGo" style="width:100%">Los geht's</button></div>
   </div>
 </div>
@@ -796,7 +806,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
 
 <script>
 /* =========================================================
-   MindQuest — Kern: Zustand, Speicher, Stimmungsmodell
+   Lumo — Kern: Zustand, Speicher, Stimmungsmodell
    ========================================================= */
 const $  = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
@@ -919,7 +929,7 @@ const CI_TEXT = {
     ["Und, wie sieht es aus?","Kein richtig oder falsch. Nimm, was sich am ehesten anfühlt wie du."]
   ],
   s2:[
-    ["Tipp den Satz einmal ab.","Nicht auf Fehler achten, nicht extra schnell sein. MindQuest misst nur den Rhythmus deiner Anschläge."],
+    ["Tipp den Satz einmal ab.","Nicht auf Fehler achten, nicht extra schnell sein. Lumo misst nur den Rhythmus deiner Anschläge."],
     ["Einmal abtippen, bitte.","Wie du tippst, verrät mehr als was du tippst: Tempo, Gleichmass, wie oft du zurückgehst."],
     ["Schreib das hier ab.","Ganz normal weitertippen. Die Zahlen daneben ändern sich live, das ist nur zum Zuschauen."],
     ["Ein Satz zum Abtippen.","Hetz nicht. Gerade der eigene Rhythmus ist der Messwert."]
@@ -1578,7 +1588,7 @@ const QUESTS = {
     {i:"💪",t:"Spann 20 Sekunden alle Muskeln an, dann lass komplett los.",x:18,g:9,k:"timer",sec:20},
     {i:"📝",t:"Schreib den Satz auf, der dich am meisten nervt. Dann streich ihn durch.",x:24,g:13,k:"hold",sec:90},
     {i:"🚶",t:"Geh einmal um den Block.",x:34,g:19,k:"move",steps:260,out:true},
-    {i:"📴",t:"Leg das Handy für fünf Minuten weg. MindQuest merkt, wenn du weg bist.",x:30,g:17,k:"away",sec:210},
+    {i:"📴",t:"Leg das Handy für fünf Minuten weg. Die App merkt, wenn du weg bist.",x:30,g:17,k:"away",sec:210},
     {i:"🧹",t:"Räum genau eine Fläche frei: Tisch, Nachttisch oder Tastatur.",x:22,g:12,k:"away",sec:120},
     {i:"❄️",t:"Halt deine Handgelenke 15 Sekunden unter kaltes Wasser.",x:15,g:8,k:"hold",sec:40}
   ],
@@ -1644,7 +1654,7 @@ const THEMES = [
   {id:"polarlicht", n:"Polarlicht",  price:600, d:"Eisblau mit Türkisleuchten über dem Horizont.",     c:["#04121C","#5FF0D0","#12556C"]}
 ];
 const PETS = [
-  {id:"lumo",   n:"Lumo",   price:0,   d:"Der Funke, mit dem alles anfängt.", c:["#9ec1ff","#5f7dff"]},
+  {id:"lumo",   n:"Sternblau", price:0, d:"Die Farbe, in der er gefallen ist.", c:["#9ec1ff","#5f7dff"]},
   {id:"ember",  n:"Ember",  price:200, d:"Glut, die nie ganz ausgeht.",       c:["#ffc48a","#ff6a3d"]},
   {id:"frost",  n:"Frost",  price:250, d:"Klar und kühl wie Morgenluft.",     c:["#cdf4ff","#54c8e8"]},
   {id:"blossom",n:"Blossom",price:300, d:"Blütenrosa mit weichem Schein.",    c:["#ffd6ec","#ff77bb"]},
@@ -1767,7 +1777,7 @@ async function importSave(file){
     applyTheme(); drawPet(); renderStats(); renderQuests(); renderDash();
     renderLog(); renderShop(); fillAmbSelect(); renderMove(); renderWeather();
     toast("Sicherung geladen · Level " + S.level);
-  }catch(e){ toast("Datei passt nicht zu MindQuest"); }
+  }catch(e){ toast("Datei passt nicht zu Lumo"); }
 }
 function renderPlayer(){
   const el = elapsedSec(), total = STAGE_LEN*3;
@@ -2011,7 +2021,7 @@ function finishCheckIn(){
   S.mood = {v, a, ts:Date.now()};
   S.history.push({v, a, ts:Date.now(), txt,
     w: S.weather ? {sun:S.weather.sunRatio, code:S.weather.code, day:S.weather.isDay} : null});
-  if(S.history.length > 80) S.history.shift();
+  if(S.history.length > 500) S.history.shift();
 
   if(updateStreak()) grantXP(8, 4);
   S.quests = rollQuests(v,a);
@@ -2132,6 +2142,14 @@ function bind(){
   };
   $("#trustSave").onclick = saveTrust;
   $("#trustSend").onclick = trustMessage;
+  $("#undoBtn").onclick = () => {
+    if(!S.history.length){ toast("Nichts zurückzunehmen"); return; }
+    const w = S.history.pop();
+    S.mood = S.history.length ? {v:S.history[S.history.length-1].v, a:S.history[S.history.length-1].a,
+                                 ts:S.history[S.history.length-1].ts} : null;
+    save(); applyTheme(); drawPet(); renderLog(); renderDash(); renderEffect(); renderPatterns(); renderPieces();
+    toast("Check-in von " + new Date(w.ts).toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}) + " entfernt");
+  };
   $("#expBtn").onclick = exportSave;
   $("#impBtn").onclick = () => $("#impFile").click();
   $("#impFile").onchange = e => { const f = e.target.files[0]; if(f) importSave(f); e.target.value = ""; };
@@ -2158,8 +2176,17 @@ async function boot(){
   $$("#modeSeg button").forEach(b => b.onclick = () => setMode(b.dataset.m));
   S.quests.forEach(q => { if(q.k === "geo" && !q.done && (q.st === "run" || q.st === "ready")){ q.st = "idle"; q.prog = 0; } });
   if(!(S.vol > .02)) S.vol = .7;
-  $("#loreBtn").onclick = () => { renderLore(); $("#lore").classList.add("on"); document.body.style.overflow = "hidden"; };
-  $("#loreX").onclick = () => { $("#lore").classList.remove("on"); document.body.style.overflow = ""; };
+  const zu = id => { $("#"+id).classList.remove("on"); document.body.style.overflow = ""; };
+  const auf = id => { $("#"+id).classList.add("on"); document.body.style.overflow = "hidden"; };
+  $("#loreBtn").onclick = () => { renderLore(); auf("lore"); };
+  $("#loreX").onclick = () => zu("lore");
+  $("#loreClose").onclick = () => zu("lore");
+  $("#lore").addEventListener("click", e => { if(e.target.id === "lore") zu("lore"); });
+  $("#intro").addEventListener("click", e => { if(e.target.id === "intro") zu("intro"); });
+  document.addEventListener("keydown", e => {
+    if(e.key !== "Escape") return;
+    ["lore","intro","sheet"].forEach(id => { const el = $("#"+id); if(el && el.classList.contains("on")) zu(id); });
+  });
   renderLore(); checkLore(); renderEarly(); renderRemind(); renderPrivacy(); armRemind();
   if(Native.da()){                                     // Schritte des ganzen Tages aus dem System
     Native.schritteHolen();
@@ -2220,7 +2247,7 @@ function installManifest(){
   try{
     const i192 = iconDataURL(192), i512 = iconDataURL(512);
     const man = {
-      name:"MindQuest — The Sound of My Mind", short_name:"MindQuest",
+      name:"Lumo — The Sound of My Mind", short_name:"Lumo",
       display:"standalone", orientation:"portrait",
       background_color:"#0B0918", theme_color:"#0B0918",
       start_url: location.href.split("#")[0],
@@ -2370,7 +2397,7 @@ function updateMediaSession(){
   try{
     navigator.mediaSession.metadata = new MediaMetadata({
       title: "Etappe " + ["I","II","III"][stage] + " — " + stageNames()[stage][0],
-      artist: "MindQuest · klingt nach " + m.n,
+      artist: "Lumo · klingt nach " + m.n,
       album: "The Sound of My Mind",
       artwork: [{src:mediaIcon, sizes:"512x512", type:"image/png"}]
     });
@@ -2446,7 +2473,7 @@ function buildMobileUI(){
     <div class="move-body">
       <p class="eyebrow">Bewegung heute</p>
       <h3 id="moveTitle">Noch keine Daten</h3>
-      <p class="move-hint" id="moveHint">Der Sensor zählt Schritte, solange MindQuest offen ist. Oder du sagst es einfach kurz selbst.</p>
+      <p class="move-hint" id="moveHint">Der Sensor zählt Schritte, solange die App offen ist. Oder du sagst es einfach kurz selbst.</p>
       <div class="move-pick" id="movePick">
         <button data-m="0.12">Kaum bewegt</button>
         <button data-m="0.5">Etwas</button>
@@ -2523,7 +2550,7 @@ function buildMobileUI(){
   sheet.className = "sheet"; sheet.id = "sheet";
   sheet.innerHTML = `
     <div class="sheet-in">
-      <button class="sheet-x" id="sheetX" aria-label="Schliessen">×</button>
+      <button class="ovx" id="sheetX" aria-label="Schliessen">×</button>
       <p class="eyebrow">Schnell-Check-in</p>
       <h2 class="title">Wie ist es gerade?</h2>
       <p class="lede" style="margin-bottom:18px">Ein Tipp genügt. Quests und Musik richten sich danach.</p>
@@ -2557,7 +2584,7 @@ function quickPick(m){
   S.mood = {v, a, ts:Date.now()};
   S.history.push({v, a, ts:Date.now(), txt:"",
     w: S.weather ? {sun:S.weather.sunRatio, code:S.weather.code, day:S.weather.isDay} : null});
-  if(S.history.length > 80) S.history.shift();
+  if(S.history.length > 500) S.history.shift();
   if(updateStreak()) grantXP(8, 4);
   S.quests = rollQuests(v, a);
   applyTheme(); drawPet(); renderStats(); renderQuests(); renderDash(); renderLog(); save();
@@ -2588,7 +2615,7 @@ function renderMove(){
     ml < .25 ? "Sehr wenig unterwegs" :
     ml < .6  ? "Etwas in Bewegung" : "Gut in Bewegung";
   $("#moveHint").textContent =
-    ml === null ? "Der Sensor zählt Schritte, solange MindQuest offen ist. Oder du sagst es einfach kurz selbst."
+    ml === null ? "Der Sensor zählt Schritte, solange die App offen ist. Oder du sagst es einfach kurz selbst."
     : ml < .25 ? "Wenig Bewegung zieht die Stimmung oft mit runter. Die Quests nehmen darauf Rücksicht."
     : "Fliesst als vierter Wert in deinen nächsten Check-in ein.";
   $("#pedBtn").textContent = Ped.on ? "Schrittzähler stoppen" : "Schrittzähler starten";
@@ -2874,9 +2901,9 @@ function questProgress(q){
 }
 function questHint(q){
   return {
-    breath:"Folge dem Kreis. Der Timer läuft nur, solange MindQuest offen ist.",
+    breath:"Folge dem Kreis. Der Timer läuft nur, solange die App offen ist.",
     timer :"Der Timer pausiert, sobald du das Fenster wechselst.",
-    away  :"Zählt nur, während MindQuest im Hintergrund ist. Also: los, mach die Sache.",
+    away  :"Zählt nur, während die App im Hintergrund ist. Also: los, mach die Sache.",
     move  :"Der Bewegungssensor zählt mit. Ohne Schritte kein Abschluss.",
     hold  :"Mach es wirklich. Danach den Knopf gedrückt halten.",
     geo   :"Dein Gerät misst die Luftlinie zum Startpunkt. Die Koordinaten bleiben hier und werden nicht gespeichert."
@@ -3433,8 +3460,9 @@ function drawPet(){
       ${outfitSVG("face", pet.c[0])}${outfitSVG("hals", pet.c[0])}${outfitSVG("kopf", pet.c[0])}
     </g>
   </svg>`;
-  $("#petName").textContent = pet.n;
-  $("#petStage2").textContent = asleep ? "schläft · Stufe " + S.level : "Stufe " + S.level + " · " + st.n;
+  $("#petName").textContent = "Lumo";
+  $("#petStage2").textContent = asleep ? "schläft · Stufe " + S.level
+    : "Stufe " + S.level + " · " + st.n + (pet.id !== "lumo" ? " · " + pet.n : "");
 }
 
 /* ersetzt die einfache Fassung weiter oben */
@@ -3542,7 +3570,7 @@ en:{
 "Noch kein Check-in":"No check-in yet","Sternbild leer":"Constellation empty",
 "← Stimmung →  ·  ↑ Energie ↓":"← Mood →  ·  ↑ Energy ↓",
 "So läuft eine Runde":"How a round works","Fühlen, hören, machen.":"Feel it, hear it, do it.",
-"Ein Check-in setzt deinen Stern ans Himmelszelt. Daraus baut MindQuest eine Musikreise nach dem Iso-Prinzip und drei SideQuests, die zu deinem Zustand passen. Erledigte Quests geben XP und Gold — davon lebt Lumo.":"A check-in places your star in the sky. From it MindQuest builds a music journey following the iso principle, plus three side quests that match your state. Completed quests give XP and gold — that is what Lumo lives on.",
+"Ein Check-in setzt deinen Stern ans Himmelszelt. Daraus baut Lumo eine Musikreise nach dem Iso-Prinzip und drei SideQuests, die zu deinem Zustand passen. Erledigte Quests geben XP und Gold — davon lebt Lumo.":"A check-in places your star in the sky. From it Lumo builds a music journey following the iso principle, plus three side quests that match your state. Completed quests give XP and gold — that is what Lumo lives on.",
 "Check-in starten":"Start check-in","Offene Quests":"Open quests","Direkt zur Musik":"Straight to the music",
 "Noch nichts hier.":"Nothing here yet.","Weiter":"Next","Überspringen":"Skip","Auswerten":"Evaluate",
 "Schritt 1 von 3":"Step 1 of 3","Schritt 2 von 3":"Step 2 of 3","Schritt 3 von 3":"Step 3 of 3",
@@ -3613,7 +3641,7 @@ en:{
 "Steh auf und streck dich, so lange du magst.":"Stand up and stretch for as long as you like.",
 "Zieh die Bettdecke glatt.":"Smooth out the duvet.",
 "Trink ein Glas Wasser.":"Drink a glass of water.",
-"MindQuest ist ein Selbsthilfe-Werkzeug und ersetzt keine Therapie.":"MindQuest is a self-help tool and does not replace therapy.",
+"Lumo ist ein Selbsthilfe-Werkzeug und ersetzt keine Therapie.":"Lumo is a self-help tool and does not replace therapy.",
 "Wenn es dir länger schlecht geht, sprich mit jemandem, dem du vertraust, oder mit einer Fachperson.":"If you have been feeling low for a while, talk to someone you trust or to a professional."
 }
 };
@@ -3734,7 +3762,7 @@ function renderEffect(){
   const ready = rows.filter(r => r.n >= 3);
   if(!ready.length){
     const total = rows.reduce((s, r) => s + r.n, 0);
-    box.innerHTML = `<p class="move-hint">Noch zu wenig Daten. MindQuest vergleicht deine Stimmung vor und nach jeder Sache — ab drei Messungen pro Kategorie steht hier, was bei dir wirkt. Bisher gezählt: ${total}.</p>`;
+    box.innerHTML = `<p class="move-hint">Noch zu wenig Daten. Lumo vergleicht deine Stimmung vor und nach jeder Sache — ab drei Messungen pro Kategorie steht hier, was bei dir wirkt. Bisher gezählt: ${total}.</p>`;
     return;
   }
   const max = Math.max(...ready.map(r => Math.abs(r.m)), 0.25);
@@ -3809,7 +3837,7 @@ function renderPatterns(){
   const box = $("#patBox"); if(!box) return;
   const ps = findPatterns();
   if(!ps.length){
-    box.innerHTML = `<p class="move-hint">Ab etwa zehn Check-ins sucht MindQuest hier nach Mustern: schwache Wochentage, Morgen gegen Abend, Wetterabhängigkeit. Bisher: ${S.history.length}.</p>`;
+    box.innerHTML = `<p class="move-hint">Ab etwa zehn Check-ins sucht Lumo hier nach Mustern: schwache Wochentage, Morgen gegen Abend, Wetterabhängigkeit. Bisher: ${S.history.length}.</p>`;
     return;
   }
   box.innerHTML = "";
@@ -4162,10 +4190,10 @@ function renderPieces(){
     });
     mk("WAV speichern", "", async b => {
       const p = await build(b);
-      dl(p.blob, "MindQuest-" + key + "-" + slug(title) + ".wav");
+      dl(p.blob, "Lumo-" + key + "-" + slug(title) + ".wav");
     });
     mk("Cover speichern", "", () => {
-      drawCover(days, key, title, 1400).toBlob(bl => dl(bl, "MindQuest-" + key + "-Cover.png"));
+      drawCover(days, key, title, 1400).toBlob(bl => dl(bl, "Lumo-" + key + "-Cover.png"));
     });
     if(navigator.canShare) mk("Teilen", "yt", async b => {
       const p = await build(b);
@@ -4553,7 +4581,7 @@ function renderEarly(){
   }
   box.innerHTML = '<div class="card" style="background:var(--bg2);margin:16px 0"><p class="eyebrow">Was sich gerade aufbaut</p>' +
     zwischen +
-    '<p class="move-hint" style="margin:0 0 14px">MindQuest rechnet mit deinen Daten — je mehr davon da sind, desto mehr kann es sagen. Das hier ist der Stand.</p>' +
+    '<p class="move-hint" style="margin:0 0 14px">Lumo rechnet mit deinen Daten — je mehr davon da sind, desto mehr kann es sagen. Das hier ist der Stand.</p>' +
     offen.slice(0,3).map(m => {
       const p = Math.round(m.ist/m.soll*100);
       return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:13px">' +
@@ -4614,7 +4642,7 @@ function armRemind(){
   Snd.remindTimer = setTimeout(() => {
     const heute = new Date().toDateString();
     if(S.lastDay !== heute){
-      try{ new Notification("MindQuest", {body: "Zwanzig Sekunden für einen Check-in?", icon: iconDataURL(192), tag: "mq"}); }catch(e){}
+      try{ new Notification("Lumo", {body: "Zwanzig Sekunden für einen Check-in?", icon: iconDataURL(192), tag: "mq"}); }catch(e){}
     }
     armRemind();
   }, Math.min(ziel - jetzt, 2147483000));
@@ -4624,16 +4652,16 @@ function downloadIcs(){
   const d = new Date(), pad = n => String(n).padStart(2,"0");
   const start = d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + "T" + t;
   const ics = [
-    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//MindQuest//DE","CALSCALE:GREGORIAN",
+    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Lumo//DE","CALSCALE:GREGORIAN",
     "BEGIN:VEVENT",
     "UID:mindquest-" + Date.now() + "@local",
     "DTSTAMP:" + start,
     "DTSTART:" + start,
     "DURATION:PT5M",
     "RRULE:FREQ=DAILY",
-    "SUMMARY:MindQuest Check-in",
+    "SUMMARY:Lumo Check-in",
     "DESCRIPTION:Zwanzig Sekunden: wie klingt es gerade?",
-    "BEGIN:VALARM","TRIGGER:PT0M","ACTION:DISPLAY","DESCRIPTION:MindQuest Check-in","END:VALARM",
+    "BEGIN:VALARM","TRIGGER:PT0M","ACTION:DISPLAY","DESCRIPTION:Lumo Check-in","END:VALARM",
     "END:VEVENT","END:VCALENDAR"
   ].join("\r\n");
   dl(new Blob([ics], {type:"text/calendar"}), "mindquest-erinnerung.ics");
@@ -4677,7 +4705,7 @@ const Native = {
       const [h, m] = (zeit || "19:00").split(":").map(Number);
       await LN.schedule({notifications:[{
         id: 4711,
-        title: "MindQuest",
+        title: "Lumo",
         body: "Zwanzig Sekunden — wie klingt es gerade?",
         schedule: {on:{hour:h, minute:m}, allowWhileIdle:true, repeats:true},
         smallIcon: "ic_stat_icon"

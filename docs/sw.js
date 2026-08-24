@@ -1,7 +1,7 @@
-/* MindQuest Service Worker
+/* Lumo Service Worker
    WICHTIG: index.html wird zuerst aus dem Netz geholt, damit eine neue Fassung
    sofort ankommt. Der Cache ist nur der Rückfall, wenn du offline bist. */
-const CACHE = "mindquest-v15";
+const CACHE = "lumo-v1";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", e => {

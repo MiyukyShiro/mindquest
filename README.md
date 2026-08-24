@@ -1,4 +1,4 @@
-# MindQuest — als App
+# Lumo — als App
 
 Drei Wege, sortiert nach Aufwand. Alle nutzen dieselbe Datei `docs/index.html`.
 
@@ -30,8 +30,8 @@ GitHub baut die App für dich in der Cloud. Du brauchst kein Android Studio.
 1. Repository anlegen wie oben, aber **den ganzen Projektordner** hochladen
    (also `docs/`, `resources/`, `scripts/`, `package.json`, `capacitor.config.json`, `.github/`).
 2. Reiter **Actions** öffnen → falls gefragt, Workflows aktivieren.
-3. Links **„MindQuest APK bauen"** wählen → **Run workflow**.
-4. Nach etwa fünf Minuten unten bei **Artifacts** die Datei `MindQuest-APK` laden.
+3. Links **„Lumo APK bauen"** wählen → **Run workflow**.
+4. Nach etwa fünf Minuten unten bei **Artifacts** die Datei `Lumo-APK` laden.
 5. `app-debug.apk` aufs Handy kopieren und öffnen.
    Android fragt einmal nach der Erlaubnis, Apps aus dieser Quelle zu installieren.
 
@@ -77,8 +77,8 @@ Vollbild, offline. Ein paar Besonderheiten:
 ### Weg 2: echte iOS-App (`.ipa`)
 
 Im Projekt liegt ein zweiter Workflow, `ios.yml`. Er läuft auf einem Mac in GitHubs
-Cloud, baut die App **ohne Signatur** und legt dir eine `MindQuest-unsigned.ipa` bereit.
-Starten unter *Actions → MindQuest IPA bauen → Run workflow*.
+Cloud, baut die App **ohne Signatur** und legt dir eine `Lumo-unsigned.ipa` bereit.
+Starten unter *Actions → Lumo IPA bauen → Run workflow*.
 
 Diese Datei musst du danach selbst signieren — Apple lässt keine unsignierten Apps zu.
 Dafür brauchst du keinen Entwicklervertrag, eine normale Apple-ID genügt:
@@ -180,7 +180,7 @@ npm i @capacitor/local-notifications
 npx cap sync
 ```
 
-Danach plant MindQuest die tägliche Erinnerung über das Betriebssystem
+Danach plant Lumo die tägliche Erinnerung über das Betriebssystem
 (`allowWhileIdle`, täglich wiederholt). Sie kommt auch, wenn die App geschlossen
 ist. In der Web-Fassung bleibt der Kalendereintrag der zuverlässige Weg.
 
@@ -214,7 +214,7 @@ Berechtigungen: Android braucht `android.permission.ACTIVITY_RECOGNITION`
 (setzt `scripts/android-manifest.sh` bereits) sowie die Health-Connect-Freigaben
 des Plugins. iOS braucht `NSHealthShareUsageDescription` in der `Info.plist`.
 
-Liefert kein Plugin einen Wert, zählt MindQuest weiter selbst über den
+Liefert kein Plugin einen Wert, zählt Lumo weiter selbst über den
 Bewegungssensor — dann eben nur, solange die App offen ist. Nichts bricht.
 
 ---
@@ -275,4 +275,4 @@ Für den Bewegungssensor braucht Android 10+ zusätzlich in
 
 ---
 
-MindQuest ist ein Selbsthilfe-Werkzeug und ersetzt keine Therapie.
+Lumo ist ein Selbsthilfe-Werkzeug und ersetzt keine Therapie.

@@ -1,10 +1,10 @@
 {
-  "name": "mindquest",
+  "name": "lumo",
   "version": "1.0.0",
   "private": true,
-  "description": "MindQuest — The Sound of My Mind",
+  "description": "Lumo — The Sound of My Mind",
   "scripts": {
-    "setup": "npm i @capacitor/core@latest @capacitor/cli@latest @capacitor/android@latest",
+    "setup": "npm i @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/local-notifications@7",
     "add:android": "npx cap add android",
     "sync": "npx cap sync",
     "open:android": "npx cap open android",

@@ -1,6 +1,6 @@
 {
-  "appId": "com.mindquest.sound",
-  "appName": "MindQuest",
+  "appId": "com.lumo.sound",
+  "appName": "Lumo",
   "webDir": "docs",
   "backgroundColor": "#0B0918",
   "android": {

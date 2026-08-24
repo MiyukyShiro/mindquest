@@ -8,7 +8,7 @@ B=/usr/libexec/PlistBuddy
 
 set_str () { $B -c "Delete :$1" "$P" 2>/dev/null || true; $B -c "Add :$1 string $2" "$P"; }
 
-set_str NSMotionUsageDescription "MindQuest zählt deine Schritte, um Bewegung in die Stimmungsauswertung einzubeziehen."
+set_str NSMotionUsageDescription "Lumo zählt deine Schritte, um Bewegung in die Stimmungsauswertung einzubeziehen."
 set_str NSLocationWhenInUseUsageDescription "Für das lokale Wetter, das in deine Stimmungsauswertung einfliesst."
 set_str NSMicrophoneUsageDescription "Für das Sprach-Tagebuch. Die Aufnahme verlaesst dein Geraet nicht."
 set_str NSSpeechRecognitionUsageDescription "Wandelt dein gesprochenes Tagebuch in Text um."
