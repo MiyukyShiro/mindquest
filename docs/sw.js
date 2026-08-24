@@ -1,5 +1,5 @@
 /* MindQuest Service Worker — App-Hülle offline verfügbar halten */
-const CACHE = "mindquest-v1";
+const CACHE = "mindquest-v6";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", e => {
