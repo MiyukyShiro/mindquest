@@ -121,7 +121,8 @@ h2.title{font-family:var(--font-display);font-weight:600;font-size:26px;margin:0
 .sky-now span{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
 
 /* ============ PET ============ */
-.pet-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center}
+.pet-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  text-align:center;min-height:330px}
 #petStage{width:150px;height:150px}
 .pet-name{font-family:var(--font-display);font-size:19px}
 .pet-sub{font-size:12px;color:var(--muted);font-family:var(--font-mono)}
@@ -462,7 +463,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
 .lore .lv{font-family:var(--font-mono);font-size:10.5px;color:var(--accent);letter-spacing:.16em;text-transform:uppercase}
 .lore p{margin:8px 0 0;font-size:14px;line-height:1.72;color:var(--muted)}
 .lore.locked h4{color:var(--muted)}
-.lore.locked p{filter:blur(3.5px);user-select:none;opacity:.5}
+.lore.locked p.zu{opacity:.75;font-style:italic}
 .lore.locked .lv{color:var(--muted)}
 .lore.fresh{border-left:3px solid var(--accent);padding-left:14px;margin-left:-14px}
 
@@ -473,11 +474,66 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
   box-shadow:var(--shadow);display:grid;place-items:center;cursor:pointer}
 .ovx:hover{border-color:var(--accent);color:var(--accent)}
 .intro-in{position:relative}
+
+/* ============ ANIMATIONEN AN LUMO ============ */
+@media (prefers-reduced-motion:no-preference){
+  .spin{animation:spinA 14s linear infinite;transform-origin:80px 80px}
+  .spin-slow{animation:spinA 34s linear infinite;transform-origin:80px 80px}
+}
+@keyframes spinA{to{transform:rotate(360deg)}}
+/* ============ SZENE HINTER LUMO ============ */
+.pet-card{position:relative;overflow:hidden}
+.pet-scene{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;
+  opacity:.95;border-radius:var(--r)}
+.pet-card > *:not(.pet-scene){position:relative;z-index:1}
+/* ============ STERNENHIMMEL IM KOPF ============ */
+header.top{position:sticky;overflow:hidden}
+#headSky{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.75}
+.top-in{position:relative;z-index:1}
+/* ============ SCROLLBALKEN UNSICHTBAR ============ */
+html{scrollbar-width:none;-ms-overflow-style:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar,.intro::-webkit-scrollbar,.sheet::-webkit-scrollbar{width:0;height:0;display:none}
+.intro,.sheet{scrollbar-width:none}
+
+.mface{vertical-align:middle;display:inline-block;filter:drop-shadow(0 3px 8px rgba(0,0,0,.4))}
+.mood-b .mface{display:block;margin:0 auto}
+#skyMood .mface{margin-right:4px}
+.log-row .e{width:30px;height:30px;flex:none}
+
+.done-head{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;margin-top:6px;
+  border-radius:var(--r-sm);background:var(--bg2);border:1px solid var(--edge);
+  font-size:13px;font-weight:650;color:var(--muted)}
+.done-head span{flex:1;text-align:left}
+.done-head b{font-family:var(--font-mono);color:var(--accent)}
+.done-head i{font-style:normal;transition:.2s}
+.done-head.open i{transform:rotate(180deg)}
+#doneList{margin-top:10px}
+
+/* ============ NOTFALL-NUMMERN ============ */
+.hl{padding:14px 0;border-bottom:1px solid var(--edge)}
+.hl:last-of-type{border-bottom:0}
+.hl b{display:block;font-family:var(--font-display);font-size:16px;margin-bottom:8px}
+.hl a{display:inline-block;margin:0 8px 6px 0;padding:9px 16px;border-radius:999px;
+  background:var(--panel2);border:1px solid var(--edge);color:var(--text);
+  text-decoration:none;font-family:var(--font-mono);font-size:15px;font-weight:600}
+.hl a:hover{border-color:var(--accent);color:var(--accent)}
+.hl a.rot{border-color:#E5484D;color:#E5484D}
+.hl span{display:block;font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px}
+
+/* ============ BEDIENBARKEIT ============ */
+#padCanvas:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.mood-b:focus-visible,.qbtn:focus-visible,.btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){
+  .breathe,.bob,.spin,.spin-slow,.now.playing .disc{animation:none!important}
+  *{scroll-behavior:auto!important}
+}
+.sig{display:block;text-align:center;margin-top:14px;font-family:var(--font-display);
+  font-size:15px;letter-spacing:.32em;color:var(--muted);opacity:.75}
 </style>
 </head>
 <body>
 
-<header class="top">
+<header class="top"><canvas id="headSky"></canvas>
   <div class="top-in">
     <div class="brand"><b>Lumo</b><span>The Sound of My Mind</span></div>
     <div class="stats">
@@ -492,7 +548,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
       <div class="chip"><span class="k">Serie</span><span id="streak">0</span></div>
       <button class="chip" id="helpBtn" aria-label="Erklärung" style="font-weight:700;cursor:pointer">?</button>
       <select id="langSel" class="chip" style="padding:7px 10px" aria-label="Sprache">
-        <option value="de">DE</option><option value="en">EN</option>
+        <option value="auto">Auto</option><option value="de">DE</option><option value="en">EN</option>
       </select>
       <div class="chip hidden" id="stepChip"><span class="k">Schritte</span><span id="stepNum">0</span><span id="stepGoalTxt" style="color:var(--muted)">/3k</span></div>
     </div>
@@ -505,7 +561,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
     <button data-view="check">Check-in</button>
     <button data-view="music">Musik</button>
     <button data-view="quest">Quests <span class="dot hidden" id="questDot"></span></button>
-    <button data-view="shop">Laden</button>
+    <button data-view="shop">Shop</button>
     <button data-view="log">Verlauf</button>
   </nav>
 
@@ -517,7 +573,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
         <div class="sky-now"><b id="skyMood">Noch kein Check-in</b><span id="skyTime">Sternbild leer</span></div>
         <div class="sky-legend">← Stimmung →&nbsp;&nbsp;·&nbsp;&nbsp;↑ Energie ↓</div>
       </div>
-      <div class="card pet-card">
+      <div class="card pet-card"><canvas class="pet-scene" id="petScene"></canvas>
         <div id="petStage"></div>
         <div>
           <div class="pet-name" id="petName">Lumo</div>
@@ -558,7 +614,9 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
         <h2 class="title">Was trifft es gerade am ehesten?</h2>
         <p class="lede">Nicht lange überlegen. Der erste Impuls ist meistens der ehrlichste.</p>
         <div id="padWrap">
-          <canvas id="padCanvas"></canvas>
+          <canvas id="padCanvas" tabindex="0" role="slider" aria-label="Klangfläche: mit den Pfeiltasten bewegen, Enter zum Bestätigen"
+                  aria-valuemin="-1" aria-valuemax="1" aria-valuenow="0" aria-valuetext="noch nichts gewählt"></canvas>
+          <p class="move-hint" id="padSpoken" aria-live="polite" style="margin-top:8px"></p>
           <p class="move-hint" style="margin-top:10px">Links klingt es schwer, rechts leicht. Oben aufgedreht, unten kraftlos. Schieb, bis es sich anhört wie du dich fühlst — der Punkt, an dem du loslässt, ist dein Check-in.</p>
         </div>
         <div class="mood-grid hidden" id="moodGrid"></div>
@@ -683,6 +741,10 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
       </div>
       <p class="move-hint" id="qlenHint" style="margin:0 0 16px"></p>
       <div id="questList"></div>
+      <div id="doneWrap" class="hidden">
+        <button class="done-head" id="doneHead"><span>Erledigt heute</span><b id="doneCount">0</b><i>▾</i></button>
+        <div id="doneList" class="hidden"></div>
+      </div>
       <div class="empty hidden" id="questEmpty"><span class="big">🗺️</span>Noch keine Quests. Ein Check-in erzeugt drei neue.<div class="btn-row" style="justify-content:center"><button class="btn primary" data-go="check">Check-in starten</button></div></div>
     </div>
   </section>
@@ -698,6 +760,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
         <button data-cat="amb">Sound-Pakete</button>
         <button data-cat="pet">Lumo</button>
         <button data-cat="outfit">Outfits</button>
+        <button data-cat="szene">Hintergründe</button>
       </nav>
       <div class="shop-grid" id="shopGrid" style="margin-top:14px"></div>
     </div>
@@ -765,12 +828,42 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
   </section>
 
   <footer class="foot">
-    <span id="buildTag" style="font-family:var(--font-mono);letter-spacing:.1em">v17 · 2026-08-24</span><br>
+    <button class="btn ghost" id="helpLink" style="font-size:12.5px;padding:9px 16px;margin-bottom:12px">Notfall-Nummern</button><br>
+    <span id="buildTag" style="font-family:var(--font-mono);letter-spacing:.1em">v22 · 2026-08-24</span><br>
     Lumo ist ein Selbsthilfe-Werkzeug und ersetzt keine Therapie.<br>
     Wenn es dir länger schlecht geht, sprich mit jemandem, dem du vertraust, oder mit einer Fachperson.
+    <br><br><span class="sig">白 &nbsp;Shiro&nbsp; 白</span>
   </footer>
 </div>
 
+<div class="intro" id="helpOv">
+  <div class="intro-in">
+    <button class="ovx" id="helpOvX" aria-label="Schliessen">×</button>
+    <p class="eyebrow">Wenn es akut ist</p>
+    <h2 class="title" style="font-size:28px">Hier sitzt ein Mensch am anderen Ende</h2>
+    <p class="lede">Kostenlos, rund um die Uhr, anonym. Du musst nicht in einer Krise sein, um dort anzurufen — Zweifel reichen völlig.</p>
+
+    <div class="hl"><b>Deutschland</b>
+      <a href="tel:08001110111">0800 111 0 111</a><a href="tel:08001110222">0800 111 0 222</a>
+      <a href="tel:116123">116 123</a>
+      <span>Telefonseelsorge, auch als Chat und Mail über telefonseelsorge.de</span></div>
+    <div class="hl"><b>Österreich</b>
+      <a href="tel:142">142</a><a href="tel:147">147</a>
+      <span>Telefonseelsorge 142, Rat auf Draht 147 für junge Menschen</span></div>
+    <div class="hl"><b>Schweiz</b>
+      <a href="tel:143">143</a><a href="tel:147">147</a>
+      <span>Die Dargebotene Hand 143, Pro Juventute 147 für Kinder und Jugendliche</span></div>
+    <div class="hl"><b>Notfall</b>
+      <a href="tel:112" class="rot">112</a>
+      <span>Bei unmittelbarer Gefahr — europaweit, auch ohne Guthaben und ohne SIM</span></div>
+    <div class="hl"><b>Anderes Land</b>
+      <a href="https://findahelpline.com" target="_blank" rel="noopener">findahelpline.com</a>
+      <span>Verzeichnis mit Nummern für über hundert Länder</span></div>
+
+    <p class="move-hint" style="margin-top:20px">Lumo zählt und erinnert sich. Mehr kann er nicht. Wenn es länger schwer ist oder du an Selbstverletzung denkst, ist ein Mensch der richtige Ansprechpartner — nicht eine App.</p>
+    <div class="btn-row"><button class="btn primary" id="helpOvClose" style="width:100%">Schliessen</button></div>
+  </div>
+</div>
 <div class="intro" id="lore">
   <div class="intro-in">
     <button class="ovx" id="loreX" aria-label="Schliessen">×</button>
@@ -778,6 +871,8 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
     <h2 class="title" style="font-size:28px">Was vom Himmel fiel</h2>
     <p class="lede" id="loreSub"></p>
     <div id="loreBox"></div>
+    <p class="eyebrow" style="margin-top:26px">Randnotizen</p>
+    <div id="notizBox"></div>
     <div class="btn-row"><button class="btn primary" id="loreClose" style="width:100%">Schliessen</button></div>
   </div>
 </div>
@@ -794,7 +889,7 @@ footer.foot{color:var(--muted);font-size:11.5px;line-height:1.65;text-align:cent
       Drei Etappen nach dem Iso-Prinzip: Etappe I klingt wie dein Zustand, III zieht dich hinaus. Alles live erzeugt, kein Stream. <i>Aufbauen</i> für tagsüber, <i>Ausklang</i> für abends, dazu eine von fünfzehn Umgebungen.</div></div>
     <div class="ib"><span>◈</span><div><b>Quests</b>
       Drei kleine Aufgaben zu deinem Zustand. Abhaken geht nicht: Timer laufen nur bei offener App, Outdoor-Quests messen per GPS, „weg vom Bildschirm" zählt nur, wenn du wirklich weg bist. Abschluss durch Gedrückthalten.</div></div>
-    <div class="ib"><span>☾</span><div><b>Laden</b>
+    <div class="ib"><span>☾</span><div><b>Shop</b>
       XP und Gold kommen aus Quests. Dafür gibt es Skins, Umgebungen und Outfits für Lumo. Bloss behaupten, wie es dir geht, bringt wenig — nachgewiesene Arbeit bringt viel.</div></div>
     <div class="ib"><span>◇</span><div><b>Verlauf</b>
       Der interessanteste Teil, aber erst nach ein paar Wochen: <i>Was bei dir wirkt</i> vergleicht deine Stimmung vor und nach jeder Sache. <i>Muster</i> sucht schwache Wochentage. <i>Klangbilder</i> macht aus jedem Monat ein Musikstück samt Cover. Dort liegen auch Sicherung und Vertrauensperson.</div></div>
@@ -983,11 +1078,11 @@ const DEFAULT = {
   mood:null, quests:[], history:[],
   move:{day:null, steps:0, manual:null, sensor:false, prev:0, goalDone:false},
   bg:false, weather:null, qlen:"kurz", pull:1, stepGoal:3000,
-  owned:{theme:["mitternacht"], amb:["stille","regen"], pet:["lumo"], outfit:[]},
-  eq:{theme:"mitternacht", amb:"regen", pet:"lumo"},
-  outfit:{kopf:null, hals:null, face:null, aura:null}, ach0:{}, today:{day:null, n:0},
+  owned:{theme:["mitternacht"], amb:["stille","regen"], pet:["lumo"], outfit:[], szene:["nacht"]},
+  eq:{theme:"mitternacht", amb:"regen", pet:"lumo", szene:"nacht"},
+  outfit:{kopf:null, hals:null, face:null, aura:null}, ach0:{}, today:{day:null, n:0, last:0},
   stats:{breath:0, outdoor:0, journeys:0, steps:0, quests:0}, finds:{}, ach:[],
-  actions:[], effect:{}, lore:[], remind:{on:false, time:"19:00"}, mode:"up", repair:{week:null, used:false}, seenIntro:false, lang:null, trust:null,
+  actions:[], effect:{}, lore:[], notiz:[], remind:{on:false, time:"19:00"}, mode:"up", repair:{week:null, used:false}, seenIntro:false, lang:null, trust:null,
   vol:0.7
 };
 let S = structuredClone(DEFAULT);
@@ -1583,6 +1678,13 @@ function skipStage(){
    ========================================================= */
 const QUESTS = {
   sturm:[
+    {i:"🧊",t:"Halt einen Eiswürfel, bis er schmilzt. Nichts anderes nebenbei.",x:22,g:13,k:"hold",sec:90},
+    {i:"📓",t:"Schreib drei Sätze über das, was dich nervt. Danach zerreiss das Blatt.",x:26,g:15,k:"away",sec:150},
+    {i:"🥊",t:"Zwanzig Sekunden Schattenboxen. Ja, gegen die Luft.",x:20,g:12,k:"timer",sec:20},
+    {i:"🔇",t:"Setz dich zwei Minuten in den leisesten Raum der Wohnung.",x:22,g:13,k:"timer",sec:120},
+    {i:"🪟",t:"Öffne alle Fenster für drei Minuten. Durchzug im Kopf braucht Durchzug im Raum.",x:24,g:14,k:"timer",sec:180},
+    {i:"🧺",t:"Falte fünf Kleidungsstücke. Wiederholung beruhigt schneller als Nachdenken.",x:22,g:13,k:"away",sec:180},
+    {i:"🐢",t:"Geh eine Minute absichtlich in Zeitlupe durch die Wohnung.",x:20,g:12,k:"timer",sec:60},
     {i:"🌬️",t:"Atme eine Minute lang: 4 Sekunden ein, 6 Sekunden aus.",x:24,g:12,k:"breath",sec:60},
     {i:"🧊",t:"Trink ein Glas kaltes Wasser — langsam, nicht in einem Zug.",x:15,g:8,k:"hold",sec:45},
     {i:"💪",t:"Spann 20 Sekunden alle Muskeln an, dann lass komplett los.",x:18,g:9,k:"timer",sec:20},
@@ -1593,6 +1695,13 @@ const QUESTS = {
     {i:"❄️",t:"Halt deine Handgelenke 15 Sekunden unter kaltes Wasser.",x:15,g:8,k:"hold",sec:40}
   ],
   sorge:[
+    {i:"📦",t:"Schreib die Sorge auf einen Zettel und leg ihn in eine Schublade. Bis morgen.",x:26,g:15,k:"away",sec:120},
+    {i:"🖐️",t:"Drück die Handflächen zehn Sekunden fest gegeneinander. Dreimal.",x:18,g:11,k:"timer",sec:45},
+    {i:"🧊",t:"Kaltes Wasser über die Handgelenke. Der Puls geht messbar runter.",x:18,g:11,k:"hold",sec:45},
+    {i:"📞",t:"Ruf jemanden an, statt zu schreiben. Zwei Minuten reichen.",x:32,g:19,k:"away",sec:150},
+    {i:"🗺️",t:"Mal die Sorge auf. Als Bild, nicht als Text.",x:28,g:16,k:"away",sec:180},
+    {i:"🌡️",t:"Nenn laut drei Dinge, die du heute nicht beeinflussen kannst.",x:22,g:13,k:"timer",sec:60},
+    {i:"🚪",t:"Geh in einen anderen Raum und komm nach zwei Minuten zurück.",x:24,g:14,k:"away",sec:120},
     {i:"👀",t:"Nenne 5 Dinge, die du siehst, 4 die du hörst, 3 die du spürst.",x:26,g:14,k:"timer",sec:90},
     {i:"🦶",t:"Stell beide Füsse fest auf den Boden und spür 30 Sekunden nur das.",x:18,g:9,k:"timer",sec:30},
     {i:"📋",t:"Schreib die Sorge in einen Satz. Darunter: was du heute davon beeinflussen kannst.",x:28,g:16,k:"away",sec:150},
@@ -1601,6 +1710,14 @@ const QUESTS = {
     {i:"💬",t:"Schreib einer Person eine kurze Nachricht. Irgendwas Beiläufiges.",x:26,g:15,k:"away",sec:90}
   ],
   schwere:[
+    {i:"🛁",t:"Wasch dir gründlich die Hände. Warm, mit Seife, ohne Eile.",x:16,g:9,k:"hold",sec:45},
+    {i:"📻",t:"Mach Musik an, die du seit Jahren nicht gehört hast.",x:24,g:14,k:"away",sec:180},
+    {i:"🪴",t:"Giess eine Pflanze. Wenn du keine hast, stell ein Glas Wasser ans Fenster.",x:20,g:12,k:"hold",sec:60},
+    {i:"✉️",t:"Schreib jemandem einen Satz, ohne eine Antwort zu erwarten.",x:26,g:15,k:"away",sec:120},
+    {i:"🧸",t:"Nimm etwas Weiches in die Hand und halt es eine Minute.",x:18,g:11,k:"hold",sec:60},
+    {i:"🍞",t:"Iss etwas Kleines. Auch wenn du keinen Hunger hast.",x:22,g:13,k:"away",sec:150},
+    {i:"🕰️",t:"Setz dich zwei Minuten ans Fenster und zähl, was sich bewegt.",x:22,g:13,k:"timer",sec:120},
+    {i:"🧹",t:"Räum genau eine Ecke auf. Die kleinste, die du findest.",x:24,g:14,k:"away",sec:180},
     {i:"🪟",t:"Öffne das Fenster und schau zwei Minuten raus.",x:22,g:12,k:"timer",sec:120},
     {i:"🍵",t:"Mach dir etwas Warmes und halt die Tasse mit beiden Händen.",x:24,g:13,k:"away",sec:180},
     {i:"🧦",t:"Zieh frische Socken an. Ja, wirklich.",x:15,g:8,k:"hold",sec:60},
@@ -1610,6 +1727,14 @@ const QUESTS = {
     {i:"🚿",t:"Wasch dir das Gesicht mit kaltem Wasser.",x:16,g:9,k:"hold",sec:45}
   ],
   leere:[
+    {i:"👟",t:"Zieh Schuhe an. Mehr nicht. Der Rest ergibt sich oder auch nicht.",x:20,g:12,k:"hold",sec:60},
+    {i:"🪟",t:"Zieh alle Vorhänge auf. Jedes Fenster.",x:18,g:11,k:"away",sec:90},
+    {i:"🍽️",t:"Bring ein Geschirrteil in die Küche. Eins reicht.",x:16,g:10,k:"move",steps:30},
+    {i:"🎒",t:"Räum eine Tasche aus, die seit Tagen rumsteht.",x:26,g:15,k:"away",sec:180},
+    {i:"💨",t:"Steh auf und atme fünfmal so tief, wie es geht.",x:18,g:11,k:"breath",sec:45},
+    {i:"📮",t:"Erledige die Sache, die zehn Sekunden dauert und seit Tagen wartet.",x:24,g:14,k:"away",sec:60},
+    {i:"🚰",t:"Füll eine Flasche Wasser und stell sie sichtbar hin.",x:18,g:11,k:"hold",sec:45},
+    {i:"🌗",t:"Wechsel den Raum. Nur das. Setz dich woanders hin.",x:20,g:12,k:"move",steps:25},
     {i:"🗑️",t:"Bring drei Teile Müll zum Eimer.",x:22,g:13,k:"move",steps:45},
     {i:"🪟",t:"Öffne für zwei Minuten das Fenster.",x:20,g:11,k:"timer",sec:120},
     {i:"🥤",t:"Trink ein grosses Glas Wasser.",x:15,g:8,k:"hold",sec:45},
@@ -1620,6 +1745,13 @@ const QUESTS = {
     {i:"🎯",t:"Nimm die kleinste offene Aufgabe — und mach nur den ersten Schritt.",x:34,g:19,k:"away",sec:210}
   ],
   klar:[
+    {i:"🗂️",t:"Räum zehn Dateien oder Fotos weg, die du nicht mehr brauchst.",x:24,g:14,k:"away",sec:180},
+    {i:"🧠",t:"Schreib die drei Dinge auf, die morgen wichtig werden.",x:22,g:13,k:"away",sec:120},
+    {i:"🚿",t:"Wechsel am Ende der Dusche dreissig Sekunden auf kalt.",x:26,g:15,k:"hold",sec:60},
+    {i:"📚",t:"Lies zwei Seiten in etwas, das kein Bildschirm ist.",x:24,g:14,k:"away",sec:180},
+    {i:"🧘",t:"Zwei Minuten sitzen, Augen zu, nur atmen.",x:24,g:14,k:"breath",sec:120},
+    {i:"🍎",t:"Iss etwas, das nicht aus einer Verpackung kommt.",x:22,g:13,k:"away",sec:150},
+    {i:"📵",t:"Leg das Handy fünf Minuten weg und mach etwas mit den Händen.",x:28,g:16,k:"away",sec:240},
     {i:"📌",t:"Schreib auf, was heute noch wichtig ist. Maximal drei Punkte.",x:22,g:13,k:"away",sec:90},
     {i:"🚶",t:"Zehn Minuten Bewegung ohne Bildschirm.",x:38,g:22,k:"move",steps:750},
     {i:"💧",t:"Trink ein Glas Wasser.",x:12,g:7,k:"hold",sec:30},
@@ -1628,6 +1760,13 @@ const QUESTS = {
     {i:"🪑",t:"Setz dich zwei Minuten hin und mach nichts.",x:22,g:12,k:"timer",sec:120}
   ],
   hoch:[
+    {i:"🎁",t:"Mach jemandem eine kleine Freude, ohne Anlass.",x:32,g:19,k:"away",sec:180},
+    {i:"📝",t:"Schreib auf, was du heute anders gemacht hast als sonst.",x:26,g:15,k:"away",sec:120},
+    {i:"🧗",t:"Nimm dir die Aufgabe vor, vor der du am meisten Respekt hast. Nur den Anfang.",x:36,g:21,k:"away",sec:300},
+    {i:"🎤",t:"Sing einen Song laut mit. Ganz durch.",x:26,g:15,k:"timer",sec:180},
+    {i:"🍳",t:"Koch etwas, das mehr als drei Schritte hat.",x:34,g:20,k:"away",sec:300},
+    {i:"📸",t:"Fotografier etwas, das du schön findest, und behalt es.",x:24,g:14,k:"away",sec:120},
+    {i:"🤝",t:"Sag jemandem zu, wobei du sonst zögerst.",x:30,g:18,k:"away",sec:180},
     {i:"💌",t:"Sag jemandem, was du an ihm oder ihr gut findest.",x:28,g:17,k:"away",sec:120},
     {i:"⚡",t:"Nutz den Schwung: zehn Minuten an der Sache, die du aufschiebst.",x:42,g:24,k:"away",sec:210},
     {i:"📓",t:"Schreib auf, was heute gut lief — für den nächsten schlechten Tag.",x:26,g:15,k:"away",sec:120},
@@ -1658,7 +1797,19 @@ const PETS = [
   {id:"ember",  n:"Ember",  price:200, d:"Glut, die nie ganz ausgeht.",       c:["#ffc48a","#ff6a3d"]},
   {id:"frost",  n:"Frost",  price:250, d:"Klar und kühl wie Morgenluft.",     c:["#cdf4ff","#54c8e8"]},
   {id:"blossom",n:"Blossom",price:300, d:"Blütenrosa mit weichem Schein.",    c:["#ffd6ec","#ff77bb"]},
-  {id:"void",   n:"Void",   price:500, d:"Dunkel, mit Sternen darin.",        c:["#7b5cff","#2a1a5e"]}
+  {id:"void",   n:"Void",   price:500, d:"Dunkel, mit Sternen darin.",        c:["#7b5cff","#2a1a5e"]},
+  {id:"galaxie",n:"Galaxie",price:1200,d:"Ein ganzer Spiralarm, in ein Wesen gefaltet. Er dreht sich wirklich.", c:["#a97bff","#160d33"], galaxy:true},
+  {id:"aurora", n:"Aurora", price:700, d:"Polarlicht, das nicht stillhält.",    c:["#7dffcf","#155c6b"]},
+  {id:"koralle",n:"Koralle",price:400, d:"Warm wie später Nachmittag.",         c:["#ffb08a","#e0554f"]}
+];
+const SCENES = [
+  {id:"nacht",    n:"Nachthimmel",  price:0,   e:"🌌", d:"Sterne über einem stillen Hügelkamm. Der Standard.",       c:["#0a0820","#151033"]},
+  {id:"wald",     n:"Nadelwald",    price:280, e:"🌲", d:"Schwarze Tannenspitzen vor tiefem Grün.",                   c:["#04140d","#0d2a1c"]},
+  {id:"meer",     n:"Meeresrand",   price:320, e:"🌊", d:"Ruhige Wellen mit Mondstreifen darauf.",                    c:["#04121c","#0a2c3e"]},
+  {id:"berge",    n:"Bergkette",    price:380, e:"🏔️", d:"Gezackte Silhouette mit Schnee auf den Spitzen.",           c:["#0b0d1e","#1b2340"]},
+  {id:"stadt",    n:"Stadt bei Nacht", price:420, e:"🏙️", d:"Fenster, die einzeln angehen und wieder aus.",           c:["#0d0a18","#221a33"]},
+  {id:"sakura",   n:"Kirschblüte",  price:520, e:"🌸", d:"Blüten, die langsam durchs Bild fallen.",                   c:["#1b0f1a","#3a1d30"]},
+  {id:"weltraum", n:"Tiefer Raum",  price:680, e:"🪐", d:"Ein fremder Planet mit Ring, sehr weit weg.",               c:["#05030f","#120a26"]}
 ];
 const PET_STAGES = [
   {min:1, n:"Funke"}, {min:3, n:"Glimmer"}, {min:6, n:"Leuchte"}, {min:10, n:"Komet"}, {min:15, n:"Sternenwesen"}
@@ -1685,9 +1836,26 @@ function renderDash(){
   const open = S.quests.filter(q => !q.done).length;
   $("#questCount").textContent = "(" + open + ")";
   $("#questDot").classList.toggle("hidden", open === 0);
+  const heuteSchon = S.lastDay === new Date().toDateString();
+  const tCard = $("#v-dash .card h2.title"), lCard = $("#v-dash .card .lede");
+  if(tCard && lCard){
+    if(!S.history.length){
+      tCard.textContent = "Fühlen, hören, machen.";
+      lCard.textContent = "Ein Check-in setzt deinen Stern ans Himmelszelt. Daraus baut Lumo eine Musikreise nach dem Iso-Prinzip und drei Quests, die zu deinem Zustand passen.";
+    } else if(!heuteSchon){
+      tCard.textContent = "Heute noch nichts eingetragen.";
+      lCard.textContent = "Zwanzig Sekunden. Danach weiss Lumo, welche Musik und welche Quests heute passen.";
+    } else {
+      const offen2 = S.quests.filter(q => !q.done).length;
+      tCard.textContent = offen2 ? "Heute erledigt: " + (S.quests.length - offen2) + " von " + S.quests.length
+                                 : "Für heute ist alles erledigt.";
+      lCard.textContent = offen2 ? "Die offenen Quests warten. Oder du legst einfach die Musik an."
+                                 : "Du kannst noch mal neu würfeln, Musik hören oder es dabei belassen.";
+    }
+  }
   if(S.mood){
     const m = nearestMood(S.mood.v, S.mood.a);
-    $("#skyMood").textContent = m.e + " " + m.n;
+    $("#skyMood").innerHTML = faceImg(m, 22) + " " + m.n;
     const d = new Date(S.mood.ts);
     $("#skyTime").textContent = d.toLocaleDateString("de-DE",{day:"2-digit",month:"short"}) + " · " +
       d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"});
@@ -1699,6 +1867,9 @@ function renderDash(){
 }
 let shopCat = "theme";
 function afterEquip(){
+  sceneStars = null;
+  if($("#moodGrid")) buildMoodGrid();                 // Gesichter tragen das neue Zubehör
+  if($("#quickGrid")) buildQuickGrid();
   applyTheme(); drawPet(); renderStats(); fillAmbSelect();
   if(Snd.ctx && Snd.playing) setAmbient(S.eq.amb);
 }
@@ -1750,7 +1921,7 @@ function renderLog(){
   [...S.history].reverse().slice(0,20).forEach(h => {
     const m = nearestMood(h.v, h.a), d = new Date(h.ts);
     const row = document.createElement("div"); row.className = "log-row";
-    row.innerHTML = `<div class="e">${m.e}</div>
+    row.innerHTML = `<div class="e">${faceImg(m, 30)}</div>
       <div class="t">${m.n}<span>${d.toLocaleDateString("de-DE",{weekday:"short",day:"2-digit",month:"short"})} · ${d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"})}${h.txt ? " · „"+h.txt+"“" : ""}</span></div>
       <div class="val">v ${h.v>=0?"+":""}${h.v.toFixed(2)} &nbsp; e ${h.a>=0?"+":""}${h.a.toFixed(2)}</div>`;
     list.appendChild(row);
@@ -1913,15 +2084,20 @@ function drawViz(){
   }
   vctx.globalAlpha = 1;
 }
-let lastPlayerPaint = 0;
+let lastPlayerPaint = 0, lastPaint = 0;
+const sparsam = matchMedia("(prefers-reduced-motion: reduce)").matches;
 function tick(t){
-  if($("#v-dash").classList.contains("on")) drawSky(t);
+  requestAnimationFrame(tick);
+  if(document.hidden) return;                       // im Hintergrund gar nicht zeichnen
+  if(t - lastPaint < (sparsam ? 200 : 33)) return;  // höchstens 30 Bilder je Sekunde
+  lastPaint = t;
+  drawHeadSky(t);
+  if($("#v-dash").classList.contains("on")){ drawSky(t); drawScene(t); }
   if($("#v-check").classList.contains("on") && !$("#step1").classList.contains("hidden")) drawPad(t);
   if($("#v-music").classList.contains("on")){
     drawViz();
     if(Snd.playing && t - lastPlayerPaint > 400){ lastPlayerPaint = t; renderPlayer(); }
   }
-  requestAnimationFrame(tick);
 }
 
 /* =========================================================
@@ -1947,12 +2123,12 @@ function showStep(n){
   if(n === 2) prepTyping();
 }
 function buildMoodGrid(){
-  const g = $("#moodGrid"); g.innerHTML = "";
+  const g = $("#moodGrid"); if(!g) return; g.innerHTML = "";
   MOODS.forEach(m => {
     const b = document.createElement("button");
     b.className = "mood-b"; b.style.setProperty("--c", m.c);
     b.setAttribute("aria-pressed","false");
-    b.innerHTML = `<span class="e">${m.e}</span><span class="n">${m.n}</span><i></i>`;
+    b.innerHTML = faceImg(m, 46) + `<span class="n">${m.n}</span><i></i>`;
     b.onclick = () => {
       CI.mood = m;
       $$(".mood-b", g).forEach(x => x.setAttribute("aria-pressed","false"));
@@ -2029,7 +2205,7 @@ function finishCheckIn(){
   const gTarget = goalFor({v, a});
   const gm = nearestMood(gTarget.v, gTarget.a);
 
-  $("#resTitle").textContent = m.e + "  " + m.n;
+  $("#resTitle").innerHTML = faceImg(m, 34) + "  " + m.n;
   const src = [];
   if(CI.mood)  src.push(CI.mood.id === "pad" ? "deine Klangfläche" : "dein Emoji");
   if(CI.type)  src.push("dein Tippverhalten");
@@ -2049,7 +2225,7 @@ function finishCheckIn(){
     care.classList.remove("hidden");
     care.innerHTML = "<b>Das sieht nach einem schweren Tag aus.</b> Musik und Mini-Quests helfen gegen den Moment, nicht gegen alles. " +
       "Wenn das schon länger so geht, red mit jemandem darüber — Freundin, Hausarzt, Beratungsstelle. " +
-      "In Deutschland ist die Telefonseelsorge rund um die Uhr unter 0800 111 0 111 erreichbar, in der Schweiz die Dargebotene Hand unter 143, in Österreich der Notruf 142." +
+      "Unter <i>Notfall-Nummern</i> ganz unten stehen kostenlose Nummern für Deutschland, Österreich und die Schweiz — rund um die Uhr, anonym." +
       (S.trust && S.trust.tel ? " Oder du schreibst " + (S.trust.name || "deiner Vertrauensperson") + " — im Verlauf steht der Knopf dafür." : "");
   } else care.classList.add("hidden");
 
@@ -2177,17 +2353,21 @@ async function boot(){
   S.quests.forEach(q => { if(q.k === "geo" && !q.done && (q.st === "run" || q.st === "ready")){ q.st = "idle"; q.prog = 0; } });
   if(!(S.vol > .02)) S.vol = .7;
   const zu = id => { $("#"+id).classList.remove("on"); document.body.style.overflow = ""; };
+  $("#helpLink").onclick = () => { $("#helpOv").classList.add("on"); document.body.style.overflow = "hidden"; };
+  $("#helpOvX").onclick = () => zu("helpOv");
+  $("#helpOvClose").onclick = () => zu("helpOv");
+  $("#helpOv").addEventListener("click", e => { if(e.target.id === "helpOv") zu("helpOv"); });
   const auf = id => { $("#"+id).classList.add("on"); document.body.style.overflow = "hidden"; };
-  $("#loreBtn").onclick = () => { renderLore(); auf("lore"); };
+  $("#loreBtn").onclick = () => { renderLore(); renderNotizen(); auf("lore"); };
   $("#loreX").onclick = () => zu("lore");
   $("#loreClose").onclick = () => zu("lore");
   $("#lore").addEventListener("click", e => { if(e.target.id === "lore") zu("lore"); });
   $("#intro").addEventListener("click", e => { if(e.target.id === "intro") zu("intro"); });
   document.addEventListener("keydown", e => {
     if(e.key !== "Escape") return;
-    ["lore","intro","sheet"].forEach(id => { const el = $("#"+id); if(el && el.classList.contains("on")) zu(id); });
+    ["lore","intro","sheet","helpOv"].forEach(id => { const el = $("#"+id); if(el && el.classList.contains("on")) zu(id); });
   });
-  renderLore(); checkLore(); renderEarly(); renderRemind(); renderPrivacy(); armRemind();
+  renderLore(); checkLore(); renderNotizen(); checkNotiz(); renderEarly(); renderRemind(); renderPrivacy(); armRemind();
   if(Native.da()){                                     // Schritte des ganzen Tages aus dem System
     Native.schritteHolen();
     setInterval(() => { if(!document.hidden) Native.schritteHolen(); }, 120000);
@@ -2199,7 +2379,12 @@ async function boot(){
   $("#remindTime").onchange = () => { S.remind = {on:(S.remind&&S.remind.on)||false, time:$("#remindTime").value}; save(); renderRemind(); armRemind(); };
   S.bg = false;                                   // Hintergrund nie automatisch
   initPad();
-  $("#introGo").onclick = () => { $("#intro").classList.remove("on"); document.body.style.overflow = ""; S.seenIntro = true; save(); };
+  $("#introGo").onclick = () => {
+    $("#intro").classList.remove("on"); document.body.style.overflow = "";
+    const erstesMal = !S.seenIntro && !S.history.length;
+    S.seenIntro = true; save();
+    if(erstesMal) setTimeout(() => go("check"), 220);      // direkt zur ersten Frage
+  };
   $("#helpBtn").onclick = () => { $("#intro").classList.add("on"); document.body.style.overflow = "hidden"; };
   if(!S.seenIntro){ $("#intro").classList.add("on"); document.body.style.overflow = "hidden"; }
   $("#lumoSay").onclick = renderLumoSpeech;
@@ -2225,21 +2410,36 @@ const isTouch = matchMedia("(pointer:coarse)").matches;
 /* ---------- App-Icon + Manifest (Startbildschirm) ---------- */
 function iconDataURL(size){
   const c = document.createElement("canvas"); c.width = c.height = size;
-  const x = c.getContext("2d"), s = size;
-  const g = x.createLinearGradient(0,0,s,s);
-  g.addColorStop(0,"#150F2E"); g.addColorStop(1,"#3B2A7A");
-  x.fillStyle = g; x.fillRect(0,0,s,s);
-  x.fillStyle = "#F2C45A";
-  x.beginPath();
-  const cx = s/2, cy = s/2, R = s*.30, r = s*.075;
-  for(let i=0;i<8;i++){
-    const ang = i*Math.PI/4 - Math.PI/2, rad = i%2 ? r : R;
-    const px = cx + Math.cos(ang)*rad, py = cy + Math.sin(ang)*rad;
-    i ? x.lineTo(px,py) : x.moveTo(px,py);
-  }
+  const x = c.getContext("2d"), S = size;
+  const g = x.createLinearGradient(0,0,0,S);
+  g.addColorStop(0,"#1a123a"); g.addColorStop(1,"#090716");
+  x.fillStyle = g; x.fillRect(0,0,S,S);
+  x.fillStyle = "rgba(255,246,216,.8)";
+  [[.17,.20,.011],[.83,.16,.014],[.88,.72,.010],[.12,.78,.012],[.5,.09,.009],[.3,.13,.008]]
+    .forEach(([px,py,r]) => { x.beginPath(); x.arc(S*px, S*py, S*r, 0, 6.283); x.fill(); });
+  const P = (px,py) => [px/160*S, py/160*S];
+  const bg = x.createLinearGradient(0,0,0,S);
+  bg.addColorStop(0,"#9ec1ff"); bg.addColorStop(1,"#5f7dff");
+  x.fillStyle = bg; x.beginPath();
+  const [sx,sy] = P(80,34);
+  x.moveTo(sx,sy);
+  x.bezierCurveTo(...P(110,34), ...P(126,56), ...P(126,80));
+  x.bezierCurveTo(...P(126,106), ...P(106,124), ...P(80,124));
+  x.bezierCurveTo(...P(54,124), ...P(34,106), ...P(34,80));
+  x.bezierCurveTo(...P(34,56), ...P(50,34), ...P(80,34));
   x.closePath(); x.fill();
-  x.globalAlpha = .5; x.beginPath(); x.arc(cx, cy, s*.40, 0, 6.283);
-  x.strokeStyle = "#8ea8ff"; x.lineWidth = s*.014; x.stroke();
+  x.fillStyle = "#12102a";
+  [[66,62],[94,62]].forEach(([ex,ey]) => {
+    const [cx2,cy2] = P(ex,ey);
+    x.beginPath(); x.ellipse(cx2, cy2, S*0.034, S*0.039, 0, 0, 6.283); x.fill();
+  });
+  x.fillStyle = "rgba(255,255,255,.9)";
+  [[67.8,60],[95.8,60]].forEach(([ex,ey]) => {
+    const [cx2,cy2] = P(ex,ey);
+    x.beginPath(); x.arc(cx2, cy2, S*0.012, 0, 6.283); x.fill();
+  });
+  x.strokeStyle = "#12102a"; x.lineWidth = S*0.019; x.lineCap = "round";
+  x.beginPath(); x.moveTo(...P(66,84)); x.lineTo(...P(94,84)); x.stroke();
   return c.toDataURL("image/png");
 }
 function installManifest(){
@@ -2560,11 +2760,15 @@ function buildMobileUI(){
   $("#sheetX").onclick = closeQuick;
   sheet.addEventListener("click", e => { if(e.target === sheet) closeQuick(); });
 
-  const qg = $("#quickGrid");
+  buildQuickGrid();
+}
+function buildQuickGrid(){
+  const qg = $("#quickGrid"); if(!qg) return;
+  qg.innerHTML = "";
   MOODS.forEach(m => {
     const b = document.createElement("button");
     b.className = "mood-b"; b.style.setProperty("--c", m.c);
-    b.innerHTML = `<span class="e">${m.e}</span><span class="n">${m.n}</span><i></i>`;
+    b.innerHTML = faceImg(m, 54) + `<span class="n">${m.n}</span><i></i>`;
     b.onclick = () => quickPick(m);
     qg.appendChild(b);
   });
@@ -2922,9 +3126,16 @@ function renderQuests(){
   list.innerHTML = ""; qEls.clear();
   empty.classList.toggle("hidden", S.quests.length > 0);
 
-  S.quests.forEach(q => {
+  const fertig = S.quests.filter(q => q.done);
+  $("#doneWrap").classList.toggle("hidden", fertig.length === 0);
+  $("#doneCount").textContent = fertig.length;
+  $("#doneList").innerHTML = fertig.map(q =>
+    '<div class="quest done"><div class="qicon">' + q.i + '</div><div class="qtext">' + q.t +
+    '<span class="qsub">' + kindLabel(q) + '</span></div><span class="q-check">✓</span></div>').join("");
+
+  S.quests.filter(q => !q.done).forEach(q => {
     const el = document.createElement("div");
-    el.className = "quest q-card" + (q.done ? " done" : "") + (q.st === "run" ? " active" : "");
+    el.className = "quest q-card" + (q.st === "run" ? " active" : "");
     el.innerHTML = `
       <div class="q-head">
         <div class="qicon">${q.i}</div>
@@ -2949,7 +3160,15 @@ function renderQuests(){
     } else {
       const b = document.createElement("button");
       b.className = "qbtn ghosty"; b.textContent = "Abbrechen";
-      b.onclick = () => { if(q.k === "geo") Geo.stop(); q.st = "idle"; q.prog = 0; save(); renderQuests(); };
+      b.onclick = () => {
+        if(q.k === "geo") Geo.stop();
+        const anteil = questProgress(q);
+        q.st = "idle"; q.prog = 0; save(); renderQuests();
+        const v = S.mood ? S.mood.v : 0;
+        toast(anteil > .55 ? "Fast geschafft. Das zählt auch."
+            : anteil > .15 ? (v < -.3 ? "Angefangen ist mehr als nichts." : "Angefangen zählt. Später vielleicht ganz.")
+            : (v < -.3 ? "Heute nicht. Ist okay." : "Kein Problem — such dir eine andere."));
+      };
       slot.appendChild(b);
 
       body.innerHTML = `
@@ -3015,7 +3234,18 @@ function completeQuest(q){
   if(draussen){ S.stats.outdoor++; markOutdoorContext(); }
 
   const heute = new Date().toDateString();
-  if(S.today.day !== heute) S.today = {day:heute, n:0};
+  if(S.today.day !== heute) S.today = {day:heute, n:0, last:0};
+  if(S.today.last && Date.now() - S.today.last < 45000){       // Abstand zwischen zwei Abschlüssen
+    q.done = false; q.st = "ready"; renderQuests();
+    toast("Kurz durchatmen — in " + Math.ceil((45000-(Date.now()-S.today.last))/1000) + " Sekunden geht die nächste");
+    return;
+  }
+  S.today.last = Date.now();
+  if(S.today.n >= 6){                                          // Tagespensum erreicht
+    chime("quest"); checkAch();
+    toast(q.i + "  Geschafft — sechs Quests heute, ab jetzt ohne Gold");
+    renderQuests(); renderDash(); save(); return;
+  }
   const fatigue = Math.max(0.45, 1 - 0.13*S.today.n);   // die fünfte Quest zählt weniger als die erste
   S.today.n++;
   const bonus = (typeof wetterBonus === "function") ? wetterBonus(q) : 1;
@@ -3027,7 +3257,7 @@ function completeQuest(q){
   grantXP(xp, gold);
   toast(q.i + "  +" + xp + " XP, +" + gold + " Gold" + (fatigue < 1 ? " (Tagespensum)" : ""));
   if(draussen && Math.random() < 0.55) rollFind();
-  checkAch();
+  checkAch(); checkNotiz();
   renderQuests(); renderDash(); renderAch(); save();
 }
 function updateQuestUI(){
@@ -3200,6 +3430,7 @@ function renderStageLinks(){
       toast("Gilt ab den nächsten Quests");
     });
     $("#rerollAll").onclick = rerollQuests;
+  $("#doneHead").onclick = () => { $("#doneList").classList.toggle("hidden"); $("#doneHead").classList.toggle("open"); };
     $$("#pullSeg button").forEach(b => b.onclick = () => {
       S.pull = +b.dataset.p; save(); renderStageLinks();
       if(Snd.playing) toast("Wirkt ab der nächsten Reise");
@@ -3357,6 +3588,15 @@ function chime(kind){
   }catch(e){}
 }
 /* Audio schon bei der ersten Berührung entsperren */
+window.addEventListener("error", e => {
+  S.lastError = (e.message || "Fehler") + " @ " + ((e.filename||"").split("/").pop() || "") + ":" + (e.lineno||0);
+  try{ save(); }catch(x){}
+  console.error(e.error || e.message);
+});
+window.addEventListener("unhandledrejection", e => {
+  S.lastError = "Promise: " + ((e.reason && e.reason.message) || e.reason || "unbekannt");
+  try{ save(); }catch(x){}
+});
 (function unlock(){
   const go = () => {
     try{
@@ -3388,7 +3628,18 @@ const OUTFITS = [
   {id:"sonnenb", slot:"face", n:"Sonnenbrille",    price:340, e:"🕶️"},
   {id:"funken",  slot:"aura", n:"Funkenflug",      price:300, e:"✨"},
   {id:"ring",    slot:"aura", n:"Sternenring",     price:560, e:"💫"},
-  {id:"regen",   slot:"aura", n:"Regenbogenschein",price:900, e:"🌈"}
+  {id:"regen",   slot:"aura", n:"Regenbogenschein",price:900, e:"🌈"},
+  {id:"kranz",   slot:"kopf", n:"Blütenkranz",     price:340, e:"💐"},
+  {id:"hoerner", slot:"kopf", n:"Kleine Hörner",   price:380, e:"😈"},
+  {id:"kapuze",  slot:"kopf", n:"Kapuze",          price:300, e:"🧥"},
+  {id:"sternhut",slot:"kopf", n:"Sternenhut",      price:640, e:"🎇"},
+  {id:"fliege",  slot:"hals", n:"Fliege",          price:180, e:"🎀"},
+  {id:"umhang",  slot:"hals", n:"Kleiner Umhang",  price:520, e:"🦸"},
+  {id:"sommers", slot:"face", n:"Sommersprossen",  price:140, e:"🫧"},
+  {id:"monokel", slot:"face", n:"Monokel",         price:260, e:"🧐"},
+  {id:"blaetter",slot:"aura", n:"Blätterwirbel",   price:420, e:"🍃"},
+  {id:"flocken", slot:"aura", n:"Schneeflocken",   price:460, e:"🌨️"},
+  {id:"noten",   slot:"aura", n:"Notenwirbel",     price:580, e:"🎵"}
 ];
 const SLOT_N = {kopf:"Kopf", hals:"Hals", face:"Gesicht", aura:"Aura"};
 
@@ -3408,6 +3659,33 @@ function outfitSVG(slot, col){
     sonnenb: `<path d="M 53 58 h 54 v 4 h -54 z" fill="#1d1d28"/><path d="M 55 60 h 22 v 13 q -11 5 -22 -2 z" fill="#1d1d28"/><path d="M 83 60 h 22 v 11 q -11 7 -22 2 z" fill="#1d1d28"/>`,
     funken:  `<g fill="${col}"><circle cx="26" cy="46" r="2.6"/><circle cx="136" cy="58" r="2"/><circle cx="34" cy="112" r="2.2"/><circle cx="130" cy="118" r="2.8"/><circle cx="80" cy="16" r="2"/></g>`,
     ring:    `<ellipse cx="80" cy="84" rx="66" ry="17" fill="none" stroke="${col}" stroke-width="2.5" opacity=".75" transform="rotate(-18 80 84)"/>`,
+    kranz:   `<g><path d="M 50 46 q 30 -20 60 0" fill="none" stroke="#7ad4a0" stroke-width="3"/>
+                ${[54,66,80,94,106].map((x,i)=>`<circle cx="${x}" cy="${[44,38,35,38,44][i]}" r="5" fill="${["#ff9ec4","#ffd76a","#ff9ec4","#c9a7ff","#ffd76a"][i]}"/>`).join("")}</g>`,
+    hoerner: `<path d="M 58 42 q -4 -18 6 -24 q 4 12 10 18 z" fill="#e0554f"/>
+              <path d="M 102 42 q 4 -18 -6 -24 q -4 12 -10 18 z" fill="#e0554f"/>`,
+    kapuze:  `<path d="M 34 78 q 0 -50 46 -50 q 46 0 46 50 q -14 -30 -46 -30 q -32 0 -46 30 z" fill="#3a4a63"/>
+              <path d="M 34 78 q 12 10 20 10 M 126 78 q -12 10 -20 10" stroke="#3a4a63" stroke-width="7" fill="none" stroke-linecap="round"/>`,
+    sternhut:`<path d="M 44 46 h 72 v 5 h -72 z" fill="#241a45"/>
+              <path d="M 80 8 l 5 14 l 15 2 l -11 10 l 3 15 l -12 -8 l -12 8 l 3 -15 l -11 -10 l 15 -2 z" fill="#F2C45A"/>
+              <path d="M 62 46 q 18 -12 36 0 q -6 -22 -18 -22 q -12 0 -18 22 z" fill="#241a45"/>`,
+    fliege:  `<g transform="translate(80,104)"><path d="M 0 0 l -16 -8 v 16 z" fill="#b03a4a"/>
+              <path d="M 0 0 l 16 -8 v 16 z" fill="#b03a4a"/><circle r="4" fill="#8d2c3a"/></g>`,
+    umhang:  `<path d="M 46 96 q 34 14 68 0 l 10 44 q -44 16 -88 0 z" fill="#4a3b8f" opacity=".92"/>
+              <circle cx="80" cy="99" r="5" fill="#F2C45A"/>`,
+    sommers: `<g fill="#12102a" opacity=".35"><circle cx="56" cy="74" r="2"/><circle cx="63" cy="79" r="1.8"/>
+              <circle cx="50" cy="80" r="1.6"/><circle cx="104" cy="74" r="2"/><circle cx="97" cy="79" r="1.8"/>
+              <circle cx="110" cy="80" r="1.6"/></g>`,
+    monokel: `<circle cx="94" cy="64" r="13" fill="none" stroke="#F2C45A" stroke-width="2.5"/>
+              <circle cx="94" cy="64" r="13" fill="#cfe6ff" opacity=".18"/>
+              <path d="M 94 77 q 3 14 -6 20" stroke="#F2C45A" stroke-width="2" fill="none"/>`,
+    blaetter:`<g class="spin" fill="#7ad4a0" opacity=".8"><ellipse cx="80" cy="14" rx="6" ry="3.4"/>
+              <ellipse cx="146" cy="80" rx="6" ry="3.4" transform="rotate(90 146 80)"/>
+              <ellipse cx="80" cy="146" rx="6" ry="3.4"/><ellipse cx="14" cy="80" rx="6" ry="3.4" transform="rotate(90 14 80)"/></g>`,
+    flocken: `<g class="spin" fill="none" stroke="#cdf4ff" stroke-width="2" opacity=".85">
+              ${[[80,16],[144,80],[80,144],[16,80]].map(([x,y])=>`<g transform="translate(${x},${y})"><path d="M -6 0 h 12 M 0 -6 v 12 M -4 -4 l 8 8 M 4 -4 l -8 8"/></g>`).join("")}</g>`,
+    noten:   `<g class="spin" fill="${col}"><g transform="translate(80,16)"><ellipse rx="4.5" ry="3.4" transform="rotate(-20)"/><rect x="3" y="-13" width="2" height="13"/></g>
+              <g transform="translate(142,86)"><ellipse rx="4" ry="3" transform="rotate(-20)"/><rect x="2.6" y="-11" width="1.8" height="11"/></g>
+              <g transform="translate(22,96)"><ellipse rx="4" ry="3" transform="rotate(-20)"/><rect x="2.6" y="-11" width="1.8" height="11"/></g></g>`,
     regen:   `<g opacity=".55" fill="none" stroke-width="3.5">
                 <path d="M 18 118 a 62 62 0 0 1 124 0" stroke="#ff6b6b"/>
                 <path d="M 25 118 a 55 55 0 0 1 110 0" stroke="#ffd76a"/>
@@ -3433,7 +3711,35 @@ function drawPet(){
     <path d="M 102 44 l 9 -26 l -25 13 z" fill="url(#pg)"/>` : "";
   const halo = (lvl >= 10 && !(S.outfit && S.outfit.kopf)) ?
     `<ellipse cx="80" cy="30" rx="30" ry="7" fill="none" stroke="${pet.c[0]}" stroke-width="2.5" opacity=".8"/>` : "";
-  const aura = lvl >= 15 ? `<circle cx="80" cy="80" r="66" fill="none" stroke="${pet.c[0]}" stroke-width="1" opacity=".35"/>` : "";
+  const aura = lvl >= 15 ? `<circle class="spin-slow" cx="80" cy="80" r="66" fill="none" stroke="${pet.c[0]}"
+     stroke-width="1" opacity=".35" stroke-dasharray="6 10"/>` : "";
+  /* Bei der Galaxie ist der ganze Körper das Sternenfeld */
+  const gsterne = [];
+  let gs = 20260824;
+  const grnd = () => (gs = (gs*1103515245 + 12345) & 0x7fffffff)/0x7fffffff;
+  for(let i=0;i<52;i++){
+    const win = grnd()*Math.PI*2, rad = Math.pow(grnd(), .55)*44;
+    gsterne.push([80 + Math.cos(win)*rad, 80 + Math.sin(win)*rad*0.94, .5 + grnd()*2, 1.6 + grnd()*3.4]);
+  }
+  const arm = (dreh, deck) => {
+    let d = "";
+    for(let i=0;i<=26;i++){
+      const t2 = i/26, w2 = t2*3.5 + dreh, r2 = 4 + t2*42;
+      d += (i ? "L" : "M") + (80 + Math.cos(w2)*r2).toFixed(1) + " " + (80 + Math.sin(w2)*r2*0.94).toFixed(1) + " ";
+    }
+    return `<path d="${d}" fill="none" stroke="#e9d9ff" stroke-width="${3.4 - dreh*0}" opacity="${deck}" stroke-linecap="round"/>`;
+  };
+  const galaxie = pet.galaxy ? `
+    <g class="spin-slow" style="transform-origin:80px 80px">
+      <ellipse cx="80" cy="80" rx="46" ry="43" fill="#0a0620" opacity=".55"/>
+      ${arm(0, .30)}${arm(2.09, .24)}${arm(4.19, .27)}
+      ${gsterne.map(([x,y,r,dur],i) =>
+        `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="#fff6d8"><animate
+          attributeName="opacity" values="0.15;1;0.15" dur="${dur.toFixed(1)}s" begin="${(i*0.11).toFixed(2)}s"
+          repeatCount="indefinite"/></circle>`).join("")}
+      <circle cx="80" cy="80" r="11" fill="#fff6d8" opacity=".22"/>
+      <circle cx="80" cy="80" r="5.5" fill="#fff6d8" opacity=".9"/>
+    </g>` : "";
   const eyes = asleep ? `
       <path d="M 60 64 q 6 6 12 0" fill="none" stroke="#12102a" stroke-width="3" stroke-linecap="round"/>
       <path d="M 88 64 q 6 6 12 0" fill="none" stroke="#12102a" stroke-width="3" stroke-linecap="round"/>
@@ -3455,7 +3761,7 @@ function drawPet(){
     <g class="breathe" filter="url(#pgl)">
       ${wings}${ears}${halo}
       <path d="M 80 34 c 30 0 46 22 46 46 c 0 26 -20 44 -46 44 c -26 0 -46 -18 -46 -44 c 0 -24 16 -46 46 -46 z" fill="url(#pg)"/>
-      ${eyes}
+      ${galaxie}${eyes}
       <path d="${mouth}" fill="none" stroke="#12102a" stroke-width="3" stroke-linecap="round"/>
       ${outfitSVG("face", pet.c[0])}${outfitSVG("hals", pet.c[0])}${outfitSVG("kopf", pet.c[0])}
     </g>
@@ -3503,13 +3809,16 @@ function renderShop(){
     return;
   }
   const data = shopCat === "theme" ? THEMES
+             : shopCat === "szene" ? SCENES
              : shopCat === "pet"   ? PETS
              : AMBIENTS.map(a => ({...a, d:ambDesc(a.id), c:null}));
   data.forEach(it => {
     const owned = S.owned[shopCat].includes(it.id);
     const eq = S.eq[shopCat] === it.id;
     const el = document.createElement("div"); el.className = "item";
-    const sw = it.c
+    const sw = (shopCat === "szene")
+      ? `<div class="swatch" style="background:linear-gradient(180deg,${it.c[1]},${it.c[0]});display:grid;place-items:center;font-size:26px">${it.e}</div>`
+      : it.c
       ? `<div class="swatch" style="background:linear-gradient(135deg,${it.c[0]} 0%,${it.c[0]} 46%,${it.c[2]||it.c[1]} 46%,${it.c[1]} 100%)"></div>`
       : `<div class="swatch" style="background:var(--bg2);display:grid;place-items:center;font-size:26px">${ambIcon(it.id)}</div>`;
     el.innerHTML = sw + `<h4>${it.n}</h4><p>${it.d}</p>` + (owned ? "" : `<div class="price">${it.price} Gold</div>`);
@@ -3565,7 +3874,7 @@ function renderAch(){
    ========================================================= */
 const DICT = {
 en:{
-"Basis":"Home","Check-in":"Check-in","Musik":"Music","Quests":"Quests","Laden":"Shop","Verlauf":"History",
+"Basis":"Home","Check-in":"Check-in","Musik":"Music","Quests":"Quests","Shop":"Shop","Verlauf":"History",
 "Level":"Level","Gold":"Gold","Serie":"Streak","Schritte":"Steps",
 "Noch kein Check-in":"No check-in yet","Sternbild leer":"Constellation empty",
 "← Stimmung →  ·  ↑ Energie ↓":"← Mood →  ·  ↑ Energy ↓",
@@ -3676,16 +3985,28 @@ function translateAll(){
   translating = false;
 }
 function setLang(l){
-  const changed = l !== LANG;
-  S.lang = LANG = l; save();
+  S.lang = l; save();
+  const neu = (l === "auto") ? systemLang() : l;
+  const changed = neu !== LANG;
+  LANG = neu;
   document.documentElement.lang = l;
-  if(changed && l === "de") location.reload();     // Deutsch ist die Grundlage
+  if(changed && LANG === "de") location.reload();  // Deutsch ist die Grundlage
   else translateAll();
+}
+function systemLang(){
+  const liste = (navigator.languages && navigator.languages.length) ? navigator.languages
+              : [navigator.language || "de"];
+  for(const l of liste){
+    const k = String(l).slice(0,2).toLowerCase();
+    if(k === "de") return "de";
+    if(DICT[k]) return k;
+  }
+  return "en";                       // alles ausser Deutsch bekommt Englisch
 }
 function initLang(){
   const sel = $("#langSel");
-  LANG = S.lang || ((navigator.language || "de").slice(0,2) in DICT ? navigator.language.slice(0,2) : "de");
-  if(sel){ sel.value = LANG; sel.onchange = e => setLang(e.target.value); }
+  LANG = (!S.lang || S.lang === "auto") ? systemLang() : S.lang;
+  if(sel){ sel.value = S.lang || "auto"; sel.onchange = e => setLang(e.target.value); }
   document.documentElement.lang = LANG;
   translateAll();
   const obs = new MutationObserver(muts => {
@@ -4341,9 +4662,24 @@ function drawPad(time){
     x.font = "600 15px " + cssVar("--font-ui");
     x.fillText(m.e + "  " + m.n, w/2, h - 26);
   } else {
+    const p = (time % 4200)/4200;                    // vorgeführte Geste
+    const gx = w*(.22 + .56*p), gy = h*(.72 - .44*Math.sin(p*Math.PI));
+    const m2 = nearestMood(gx/w*2-1, 1-gy/h*2);
+    x.globalAlpha = .22; x.strokeStyle = m2.c; x.lineWidth = 2;
+    x.beginPath();
+    for(let i=0;i<=40;i++){
+      const q = i/40, qx = w*(.22 + .56*q), qy = h*(.72 - .44*Math.sin(q*Math.PI));
+      i ? x.lineTo(qx,qy) : x.moveTo(qx,qy);
+    }
+    x.stroke();
+    x.globalAlpha = .75; x.fillStyle = m2.c;
+    x.beginPath(); x.arc(gx, gy, 11, 0, 6.283); x.fill();
+    x.globalAlpha = .25;
+    x.beginPath(); x.arc(gx, gy, 22, 0, 6.283); x.fill();
+    x.globalAlpha = 1;
     x.fillStyle = cssVar("--muted"); x.textAlign = "center";
     x.font = "14px " + cssVar("--font-ui");
-    x.fillText("Fahr mit dem Finger über die Fläche", w/2, h/2 + 30);
+    x.fillText("Fahr mit dem Finger über die Fläche", w/2, h - 22);
   }
 }
 
@@ -4359,6 +4695,7 @@ function initPad(){
   const move = e => {
     const p = padXY(e); Pad.set(p.v, p.a);
     $("#padNext").disabled = false;
+    if(Pad.ansagen) Pad.ansagen();
   };
   c.addEventListener("pointerdown", e => {
     e.preventDefault(); down = true; c.setPointerCapture(e.pointerId);
@@ -4370,6 +4707,37 @@ function initPad(){
   ["pointerup","pointercancel","pointerleave"].forEach(ev =>
     c.addEventListener(ev, () => { if(!down) return; down = false; Pad.stop(); }));
   c.addEventListener("contextmenu", e => e.preventDefault());
+
+  /* Ohne Maus und ohne Wischen: Pfeiltasten, Enter bestätigt */
+  c.addEventListener("keydown", e => {
+    const schritt = e.shiftKey ? .25 : .1;
+    let v = Pad.v, a = Pad.a, benutzt = true;
+    switch(e.key){
+      case "ArrowLeft":  v -= schritt; break;
+      case "ArrowRight": v += schritt; break;
+      case "ArrowUp":    a += schritt; break;
+      case "ArrowDown":  a -= schritt; break;
+      case "Home":       v = -1; a = 0; break;
+      case "End":        v = 1;  a = 0; break;
+      case "Enter": case " ": Pad.stop(); $("#padNext").click(); e.preventDefault(); return;
+      default: benutzt = false;
+    }
+    if(!benutzt) return;
+    e.preventDefault();
+    if(!Pad.live) Pad.start();
+    Pad.set(v, a);
+    $("#padNext").disabled = false;
+    ansagen();
+  });
+  c.addEventListener("blur", () => { if(Pad.live) Pad.stop(); });
+  function ansagen(){
+    const m = nearestMood(Pad.v, Pad.a);
+    c.setAttribute("aria-valuenow", Pad.v.toFixed(2));
+    c.setAttribute("aria-valuetext", m.n + ", Stimmung " + Pad.v.toFixed(2) + ", Energie " + Pad.a.toFixed(2));
+    $("#padSpoken").textContent = m.n + " · Stimmung " + (Pad.v>=0?"+":"") + Pad.v.toFixed(2) +
+                                  " · Energie " + (Pad.a>=0?"+":"") + Pad.a.toFixed(2);
+  }
+  Pad.ansagen = ansagen;
 
   $("#padNext").onclick = () => {
     Pad.stop();
@@ -4530,9 +4898,53 @@ function renderLore(fresh){
     el.className = "lore" + (auf ? "" : " locked") + (fresh === l.lv ? " fresh" : "");
     el.innerHTML = '<div class="lv">Kapitel ' + (LORE.indexOf(l)+1) + " · ab Level " + l.lv + '</div>' +
       "<h4>" + (auf ? l.t : "Noch verschlossen") + "</h4>" +
-      "<p>" + (auf ? l.x : LORE[0].x).replace(/\n\n/g, "</p><p>") + "</p>";
+      (auf ? "<p>" + l.x.split("\n\n").join("</p><p>") + "</p>"
+           : '<p class="zu">Lumo erzählt weiter, sobald du Level ' + l.lv + " erreichst.</p>");
     box.appendChild(el);
   });
+}
+
+/* Randnotizen: nicht an Level gebunden, sondern an das, was du getan hast */
+const NOTIZ = [
+  {id:"draussen", n:"Nach dem ersten Mal draussen",
+   w:() => S.stats.outdoor >= 1,
+   x:"Du warst draussen. Ich habe die Entfernung mitgezählt, aber das war nicht der Punkt.\n\nDer Punkt war der Moment vor der Tür, wo du kurz stehen geblieben bist. Ich weiss nicht, ob du das gemerkt hast. Ich schon."},
+  {id:"regen", n:"Nach dem ersten Regen",
+   w:() => S.ach0 && S.ach0.regen,
+   x:"Bei Regen rauszugehen ist eine merkwürdige Entscheidung. Es gibt keinen guten Grund dafür, und trotzdem hilft es fast immer.\n\nIch glaube, es liegt daran, dass Regen einem eine Aufgabe gibt: nass werden und wieder trocken. Etwas, das anfängt und aufhört."},
+  {id:"nacht2", n:"Nach der ersten Nacht draussen",
+   w:() => S.ach0 && S.ach0.nacht,
+   x:"Nachts ist die Welt kleiner. Man sieht nur bis zur nächsten Laterne, und das reicht auch.\n\nVon oben sah ich immer alles auf einmal. Ehrlich gesagt war das anstrengender."},
+  {id:"fund", n:"Nach dem ersten Fundstück",
+   w:() => Object.keys(S.finds || {}).length >= 1,
+   x:"Du hast etwas mitgebracht. Ein Blatt, einen Stein, irgendwas.\n\nMenschen sammeln Dinge, die keinen Wert haben, und geben ihnen dadurch einen. Ich habe das nie verstanden, bis du das erste hier abgelegt hast."},
+  {id:"reise", n:"Nach der ersten ganzen Reise",
+   w:() => S.stats.journeys >= 1,
+   x:"Sieben Minuten am Stück. Kein Wechseln, kein Weiterspringen.\n\nDie Musik hat dich dort abgeholt, wo du warst, und ist mit dir gegangen. So ist das gedacht: nicht dagegen, sondern daneben."},
+  {id:"klang", n:"Nach dem ersten Klangbild",
+   w:() => (typeof availableMonths === "function") && availableMonths().length >= 1,
+   x:"Jetzt gibt es ein Stück, das es vorher nicht gab, und niemand sonst hat es.\n\nEs ist aus lauter Tagen gemacht, von denen die meisten nichts Besonderes waren. Genau das gefällt mir daran."},
+  {id:"wirkung", n:"Nach der ersten Messung",
+   w:() => Object.values(S.effect || {}).some(e => e.n >= 3),
+   x:"Ab jetzt weiss ich etwas über dich, das in keinem Ratgeber steht.\n\nWas anderen hilft, ist eine Statistik. Was dir hilft, ist deine. Ich sage dir immer nur die zweite."},
+  {id:"reparatur", n:"Nach dem ersten ausgelassenen Tag",
+   w:() => S.repair && S.repair.used,
+   x:"Du hast einen Tag ausgelassen und die Serie steht trotzdem. Das war kein Versehen von mir.\n\nEine Kette, die beim ersten fehlenden Glied reisst, ist keine Hilfe, sondern eine Drohung. Davon hast du genug."},
+  {id:"zehntausend", n:"Nach zehntausend Schritten",
+   w:() => S.stats.steps >= 10000,
+   x:"Zehntausend Schritte, gezählt in Häppchen von zwanzig und dreissig.\n\nNichts davon war ein Spaziergang mit Absicht. Es kommt trotzdem zusammen."}
+];
+function renderNotizen(){
+  const box = $("#notizBox"); if(!box) return;
+  const offen = NOTIZ.filter(n => { try{ return n.w(); }catch(e){ return false; } });
+  if(!offen.length){
+    box.innerHTML = '<p class="move-hint">Randnotizen schreibt Lumo, wenn du etwas zum ersten Mal machst — draussen unterwegs, bei Regen, ein Fundstück, eine ganze Musikreise.</p>';
+    return;
+  }
+  box.innerHTML = offen.map(n =>
+    '<div class="lore"><div class="lv">Randnotiz</div><h4>' + n.n + "</h4><p>" +
+    n.x.split("\n\n").join("</p><p>") + "</p></div>").join("") +
+    '<p class="move-hint" style="margin-top:10px">' + offen.length + " von " + NOTIZ.length + " Randnotizen.</p>";
 }
 function checkLore(){
   const neu = LORE.filter(l => S.level >= l.lv && !(S.lore||[]).includes(l.lv));
@@ -4542,6 +4954,15 @@ function checkLore(){
   const l = neu[neu.length-1];
   setTimeout(() => { chime("ach"); toast("Neues Kapitel: " + l.t); }, 700);
   renderLore(l.lv);
+}
+function checkNotiz(){
+  const offen = NOTIZ.filter(n => { try{ return n.w(); }catch(e){ return false; } }).map(n => n.id);
+  const neu = offen.filter(id => !(S.notiz || []).includes(id));
+  if(!neu.length) return;
+  S.notiz = (S.notiz || []).concat(neu); save();
+  const n = NOTIZ.find(x => x.id === neu[neu.length-1]);
+  setTimeout(() => toast("Lumo hat etwas notiert: " + n.n), 1500);
+  renderNotizen();
 }
 
 /* =========================================================
@@ -4680,7 +5101,9 @@ function renderPrivacy(){
     "<b style=\"color:var(--text)\">Gespeichert wird:</b> deine Stimmungswerte mit Zeitstempel, die ersten 64 Zeichen deines Tagessatzes, Level, Gold, Erfolge, Fundstücke, gekaufte Gegenstände, Schrittzahl des Tages, das zuletzt geladene Wetter und — falls du sie einträgst — Name und Nummer deiner Vertrauensperson.<br><br>" +
     "<b style=\"color:var(--text)\">Nicht gespeichert wird:</b> dein Standort. Bei Outdoor-Quests bleibt er im Arbeitsspeicher und wird nur zur Entfernungsmessung benutzt. Sprachaufnahmen werden vom Browser in Text gewandelt und nicht abgelegt.<br><br>" +
     "<b style=\"color:var(--text)\">Nach draussen geht:</b> nur die Wetterabfrage, mit gerundeten Koordinaten an open-meteo.com. Und was du selbst verschickst — ein Klangbild oder eine Nachricht an deine Vertrauensperson.<br><br>" +
-    "Mit <i>Sicherung speichern</i> holst du alles als Datei heraus, mit <i>Alle Daten löschen</i> ist es endgültig weg.";
+    "Mit <i>Sicherung speichern</i> holst du alles als Datei heraus, mit <i>Alle Daten löschen</i> ist es endgültig weg." +
+    (S.lastError ? "<br><br><b style=\"color:var(--text)\">Letzte Fehlermeldung:</b> <span style=\"font-family:var(--font-mono);font-size:11.5px\">" +
+       String(S.lastError).slice(0,160) + "</span> — schick mir das, falls etwas nicht geht." : "");
 }
 
 /* =========================================================
@@ -4748,6 +5171,192 @@ const Native = {
     }
   }
 };
+
+/* =========================================================
+   SZENE HINTER LUMO + STERNENHIMMEL IM KOPF
+   ========================================================= */
+let sceneStars = null;
+function drawScene(t){
+  const c = $("#petScene"); if(!c || !c.clientWidth) return;
+  const {w, h, dpr} = fitCanvas(c);
+  const x = c.getContext("2d");
+  x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,w,h);
+  const sz = SCENES.find(z => z.id === (S.eq.szene || "nacht")) || SCENES[0];
+  const nacht = S.weather ? !S.weather.isDay : (new Date().getHours() < 7 || new Date().getHours() > 20);
+  const m = S.mood ? nearestMood(S.mood.v, S.mood.a) : MOODS[6];
+
+  const g = x.createLinearGradient(0,0,0,h);
+  g.addColorStop(0, sz.c[0]); g.addColorStop(1, sz.c[1]);
+  x.fillStyle = g; x.fillRect(0,0,w,h);
+
+  if(!sceneStars){
+    let s0 = 4711; const rnd = () => (s0 = (s0*1103515245+12345) & 0x7fffffff)/0x7fffffff;
+    sceneStars = Array.from({length:40}, () => ({x:rnd(), y:rnd()*0.72, r:rnd()*1.2+.3, p:rnd()*6.3, q:rnd()}));
+  }
+  if(sz.id !== "stadt"){
+    sceneStars.forEach(st => {
+      x.globalAlpha = (.22 + .55*Math.abs(Math.sin(t/1500 + st.p))) * (nacht ? 1 : .4);
+      x.fillStyle = "#FFF6D8";
+      x.beginPath(); x.arc(st.x*w, st.y*h, st.r, 0, 6.283); x.fill();
+    });
+    x.globalAlpha = 1;
+  }
+
+  const gl = x.createRadialGradient(w/2, h*.42, 0, w/2, h*.42, w*.6);
+  gl.addColorStop(0, m.c); gl.addColorStop(1, "transparent");
+  x.globalAlpha = .16; x.fillStyle = gl; x.fillRect(0,0,w,h); x.globalAlpha = 1;
+
+  const dunkel = "#07050f";
+  if(sz.id === "nacht"){
+    x.fillStyle = nacht ? "#0d0a22" : "#1a1440";
+    x.beginPath(); x.moveTo(0,h);
+    for(let i=0;i<=w;i+=8) x.lineTo(i, h - 16 - Math.sin(i/w*3.1)*10 - Math.sin(i/23)*2);
+    x.lineTo(w,h); x.closePath(); x.fill();
+
+  } else if(sz.id === "wald"){
+    x.fillStyle = "#071c12";
+    for(let i=-1;i<w/26+1;i++){
+      const bx = i*26 + 13, bh = 40 + ((i*37)%23);
+      x.beginPath(); x.moveTo(bx, h-bh); x.lineTo(bx+13, h); x.lineTo(bx-13, h); x.closePath(); x.fill();
+    }
+  } else if(sz.id === "meer"){
+    x.fillStyle = "#06202e";
+    x.beginPath(); x.moveTo(0,h);
+    for(let i=0;i<=w;i+=6) x.lineTo(i, h*.72 + Math.sin(i/28 + t/1400)*4 + Math.sin(i/9)*1.6);
+    x.lineTo(w,h); x.closePath(); x.fill();
+    x.globalAlpha = .5; x.strokeStyle = "#cfeaff"; x.lineWidth = 1;
+    for(let k=0;k<4;k++){
+      x.beginPath();
+      for(let i=0;i<=w;i+=6) x.lineTo(i, h*(.78+k*.05) + Math.sin(i/20 + t/900 + k)*3);
+      x.stroke();
+    }
+    x.globalAlpha = 1;
+  } else if(sz.id === "berge"){
+    [[.45,"#141a33"],[.32,"#1d2647"]].forEach(([hh, col], lag) => {
+      x.fillStyle = col; x.beginPath(); x.moveTo(0,h);
+      const zacken = 5 + lag*2;
+      for(let i=0;i<=zacken;i++){
+        const px = i/zacken*w;
+        const py = h - h*hh*(0.55 + 0.45*Math.abs(Math.sin(i*1.7 + lag)));
+        x.lineTo(px, py);
+      }
+      x.lineTo(w,h); x.closePath(); x.fill();
+    });
+    x.fillStyle = "#e8eeff"; x.globalAlpha = .8;
+    x.beginPath(); x.moveTo(w*.38, h*.55); x.lineTo(w*.44, h*.47); x.lineTo(w*.50, h*.55); x.closePath(); x.fill();
+    x.globalAlpha = 1;
+  } else if(sz.id === "stadt"){
+    let sd = 77; const rnd = () => (sd = (sd*1103515245+12345) & 0x7fffffff)/0x7fffffff;
+    for(let i=0;i<14;i++){
+      const bw = w/14, bx = i*bw, bh = 24 + rnd()*70;
+      x.fillStyle = "#120e22"; x.fillRect(bx, h-bh, bw-2, bh);
+      for(let fy = h-bh+6; fy < h-6; fy += 9)
+        for(let fx = bx+3; fx < bx+bw-6; fx += 7){
+          const an = Math.sin(t/2600 + fx*0.7 + fy*1.3) > .55;
+          if(an){ x.fillStyle = "#ffd76a"; x.globalAlpha = .75; x.fillRect(fx, fy, 3, 4); x.globalAlpha = 1; }
+        }
+    }
+  } else if(sz.id === "sakura"){
+    x.fillStyle = "#2a1120";
+    x.beginPath(); x.moveTo(0,h);
+    for(let i=0;i<=w;i+=10) x.lineTo(i, h - 14 - Math.sin(i/w*2.6)*8);
+    x.lineTo(w,h); x.closePath(); x.fill();
+    sceneStars.forEach((st, i) => {                        // fallende Blüten
+      const py = ((st.q + t/14000*(0.5 + st.r/2)) % 1) * h;
+      const px = st.x*w + Math.sin(t/1600 + i)*10;
+      x.globalAlpha = .8; x.fillStyle = i%3 ? "#ffb7d5" : "#ffe1ee";
+      x.beginPath(); x.ellipse(px, py, 3.2, 2.1, i + t/2000, 0, 6.283); x.fill();
+    });
+    x.globalAlpha = 1;
+  } else if(sz.id === "weltraum"){
+    const px = w*.74, py = h*.34, r = Math.min(w,h)*.17;
+    const pg = x.createRadialGradient(px-r*.4, py-r*.4, 0, px, py, r);
+    pg.addColorStop(0, "#8d7bff"); pg.addColorStop(1, "#2a1f52");
+    x.fillStyle = pg; x.beginPath(); x.arc(px, py, r, 0, 6.283); x.fill();
+    x.strokeStyle = "#cbbcff"; x.globalAlpha = .55; x.lineWidth = 2.4;
+    x.save(); x.translate(px, py); x.rotate(-0.4);
+    x.beginPath(); x.ellipse(0, 0, r*1.75, r*.42, 0, 0, 6.283); x.stroke();
+    x.restore(); x.globalAlpha = 1;
+    x.fillStyle = dunkel;
+    x.beginPath(); x.moveTo(0,h);
+    for(let i=0;i<=w;i+=12) x.lineTo(i, h - 10 - Math.sin(i/w*2)*6);
+    x.lineTo(w,h); x.closePath(); x.fill();
+  }
+}
+let headStars = null;
+function drawHeadSky(t){
+  const c = $("#headSky"); if(!c) return;
+  c.style.width = "100%"; c.style.height = "100%";
+  const {w, h, dpr} = fitCanvas(c);
+  if(!w || !h) return;
+  const x = c.getContext("2d");
+  x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,w,h);
+  if(!headStars){
+    let s0 = 99; const rnd = () => (s0 = (s0*1103515245+12345) & 0x7fffffff)/0x7fffffff;
+    headStars = Array.from({length:46}, () => ({x:rnd(), y:rnd(), r:rnd()*1.1+.25, p:rnd()*6.3, s:rnd()*.4+.1}));
+  }
+  const mood = cssVar("--mood");
+  const g = x.createLinearGradient(0,0,w,0);
+  g.addColorStop(0, "transparent"); g.addColorStop(1, mood);
+  x.globalAlpha = .10; x.fillStyle = g; x.fillRect(0,0,w,h);
+  headStars.forEach(s => {
+    const px = ((s.x + t/90000*s.s) % 1) * w;
+    x.globalAlpha = .2 + .6*Math.abs(Math.sin(t/1700 + s.p));
+    x.fillStyle = "#FFF6D8";
+    x.beginPath(); x.arc(px, s.y*h, s.r, 0, 6.283); x.fill();
+  });
+  x.globalAlpha = 1;
+}
+
+/* =========================================================
+   LUMO-GESICHTER STATT EMOJIS
+   ========================================================= */
+function dunkler(hex, f){
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.round(((n>>16)&255)*f), g = Math.round(((n>>8)&255)*f), b = Math.round((n&255)*f);
+  return "#" + ((1<<24) + (r<<16) + (g<<8) + b).toString(16).slice(1);
+}
+/* Dieselbe Silhouette wie der grosse Lumo, nur klein und in der Stimmungsfarbe */
+function moodFace(m, px){
+  px = px || 44;
+  const id = "g" + m.id;
+  const pet = (typeof PETS !== "undefined" && PETS.find(p => p.id === S.eq.pet)) || null;
+  const hut = (S.outfit && S.outfit.kopf) ? outfitSVG("kopf", m.c) : "";
+  const sterne = (pet && pet.galaxy) ? (() => {                 // Galaxie auch im Kleinen
+    let g2 = 7717; const r2 = () => (g2 = (g2*1103515245+12345) & 0x7fffffff)/0x7fffffff;
+    let o = '<ellipse cx="80" cy="80" rx="44" ry="42" fill="#0a0620" opacity=".5"/>';
+    for(let i=0;i<16;i++){
+      const w2 = r2()*6.28, rr = Math.pow(r2(), .55)*40;
+      o += `<circle cx="${(80+Math.cos(w2)*rr).toFixed(1)}" cy="${(80+Math.sin(w2)*rr*.94).toFixed(1)}" r="${(.7+r2()*1.6).toFixed(1)}" fill="#fff6d8" opacity=".9"/>`;
+    }
+    return o + '<circle cx="80" cy="80" r="4" fill="#fff6d8" opacity=".85"/>';
+  })() : "";
+  const eyeY = m.v < -0.35 ? 66 : 62;
+  const ry = m.a > .45 ? 6.6 : m.a < -.5 ? 2.4 : 5.4;
+  const mund = m.v > .35 ? "M 62 82 q 18 16 36 0"
+             : m.v < -.35 ? "M 64 88 q 16 -11 32 0"
+             : "M 66 84 h 28";
+  const braue = m.v < -.3
+    ? `<path d="M 54 50 l 14 6 M 106 50 l -14 6" stroke="#12102a" stroke-width="3" stroke-linecap="round" fill="none" opacity=".7"/>` : "";
+  const ohren = (m.a > .6 && !(S.outfit && S.outfit.kopf))
+    ? `<path d="M 58 44 l -9 -26 l 25 13 z" fill="url(#${id})"/><path d="M 102 44 l 9 -26 l -25 13 z" fill="url(#${id})"/>` : "";
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 124 124" width="${px}" height="${px}">
+    <defs><radialGradient id="${id}" cx="38%" cy="30%">
+      <stop offset="0%" stop-color="${m.c}"/><stop offset="100%" stop-color="${dunkler(m.c, .55)}"/>
+    </radialGradient></defs>
+    ${ohren}
+    <path d="M 80 34 c 30 0 46 22 46 46 c 0 26 -20 44 -46 44 c -26 0 -46 -18 -46 -44 c 0 -24 16 -46 46 -46 z" fill="url(#${id})"/>
+    ${sterne}${braue}
+    <ellipse cx="66" cy="${eyeY}" rx="5.4" ry="${ry}" fill="#12102a"/>
+    <ellipse cx="94" cy="${eyeY}" rx="5.4" ry="${ry}" fill="#12102a"/>
+    <circle cx="67.8" cy="${eyeY-2}" r="1.8" fill="#fff" opacity=".9"/>
+    <circle cx="95.8" cy="${eyeY-2}" r="1.8" fill="#fff" opacity=".9"/>
+    <path d="${mund}" fill="none" stroke="#12102a" stroke-width="3.2" stroke-linecap="round"/>
+    ${hut}
+  </svg>`;
+  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+}
+function faceImg(m, px){ return `<img class="mface" src="${moodFace(m, px)}" alt="${m.n}" width="${px||44}" height="${px||44}">`; }
 
 boot();
 </script>
