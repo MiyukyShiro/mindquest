@@ -23,9 +23,13 @@ die brauchen alle eine `https`-Adresse.
 
 ---
 
-## Weg 2 — Echte APK, ohne irgendetwas zu installieren
+## Weg 2 — Echte APK, ohne Android Studio
 
-GitHub baut die App für dich in der Cloud. Du brauchst kein Android Studio.
+GitHub baut die App für dich in der Cloud. Auf deinem Rechner musst du nichts installieren.
+
+**Ein GitHub-Konto brauchst du trotzdem** — zum Anlegen des Repositories, zum Starten
+des Builds und zum Herunterladen der fertigen Datei. Das ist kostenlos.
+Deine Tester brauchen dagegen keins, siehe „Weitergeben ohne Konto" weiter unten.
 
 1. Repository anlegen wie oben, aber **den ganzen Projektordner** hochladen
    (also `docs/`, `resources/`, `scripts/`, `package.json`, `capacitor.config.json`, `.github/`).
@@ -37,6 +41,24 @@ GitHub baut die App für dich in der Cloud. Du brauchst kein Android Studio.
 
 Die APK ist mit einem Debug-Schlüssel signiert: gut für dich und Freunde,
 nicht für den Play Store. Dafür brauchst du einen eigenen Signaturschlüssel.
+
+### Weitergeben ohne Konto
+
+Artefakte aus Actions kann nur herunterladen, wer bei GitHub angemeldet ist.
+Für Freunde und Tester gibt es deshalb den Veröffentlichen-Weg:
+
+*Actions → „Lumo APK bauen" → Run workflow* — dort den Haken bei
+**„APK als Download-Link veröffentlichen"** setzen und eine Version eintragen.
+
+Der Build legt danach unter *Releases* einen Eintrag mit der APK an. Diesen Link
+kann jeder öffnen und die Datei herunterladen, ohne Konto und ohne Anmeldung:
+
+```
+https://github.com/DEINNAME/mindquest/releases/latest
+```
+
+Für iPhone-Nutzer bleibt die Webseite der richtige Weg — dort ist ohnehin kein
+Konto nötig.
 
 ---
 
@@ -226,6 +248,78 @@ Regen, Nacht, Hitze, Wind, Frost, Sonne, Grau. Dazu ein Bonus auf XP und Gold
 für Draussen-Quests bei hartem Wetter — 35 % bei Gewitter und Schnee, 25 % bei
 Regen, Frost, Hitze und Sturm, 20 % nachts. Bei Gewitter, Starkregen oder
 Dunkelheit werden gefährliche Draussen-Quests dagegen gar nicht erst vergeben.
+
+---
+
+## In den Google Play Store
+
+Der Play Store verlangt ein **signiertes AAB**, nicht die Debug-APK. Dafür gibt es
+den Workflow `play.yml` — er baut beides: das AAB für den Store und eine signierte
+APK zum direkten Weitergeben.
+
+### 1. Einmalig einen Schlüssel erzeugen
+
+Auf deinem Rechner (Java muss installiert sein, kommt mit Android Studio mit):
+
+```bash
+keytool -genkey -v -keystore lumo-upload.keystore -alias lumo \
+        -keyalg RSA -keysize 2048 -validity 10000
+```
+
+Du vergibst dabei zwei Passwörter und ein paar Angaben zur Person.
+**Bewahre die Datei und die Passwörter gut auf.** Ohne sie kannst du nie wieder
+ein Update derselben App hochladen — Google lässt das nicht zu.
+
+Dann in Text umwandeln:
+
+```bash
+base64 -w0 lumo-upload.keystore > keystore.txt     # Linux
+base64 -i lumo-upload.keystore | tr -d '\n' > keystore.txt   # macOS
+certutil -encode lumo-upload.keystore keystore.txt            # Windows
+```
+
+### 2. Vier Geheimnisse bei GitHub hinterlegen
+
+*Settings → Secrets and variables → Actions → New repository secret*
+
+| Name | Inhalt |
+|---|---|
+| `LUMO_KEYSTORE_BASE64` | der ganze Inhalt von `keystore.txt` |
+| `LUMO_STORE_PASSWORD` | das Keystore-Passwort |
+| `LUMO_KEY_ALIAS` | `lumo` |
+| `LUMO_KEY_PASSWORD` | das Schlüssel-Passwort |
+
+### 3. Bauen lassen
+
+*Actions → „Lumo für den Play Store bauen" → Run workflow.*
+Dort trägst du Versionsname (z. B. `1.11.0`) und Versionsnummer (`11`) ein.
+**Die Versionsnummer muss bei jedem Upload steigen**, sonst lehnt Google ab.
+
+Ergebnis unter *Artifacts*: `app-release.aab` und `app-release.apk`.
+
+### 4. Im Play Console eintragen
+
+1. [play.google.com/console](https://play.google.com/console) — einmalig 25 $ Registrierung.
+2. **App erstellen** → Name `Lumo — Sound of My Mind`, Deutsch, kostenlos, App.
+3. **Produktionsversion** → das `.aab` hochladen.
+4. **Store-Eintrag**: Texte und Grafiken liegen in `store/play-texte.md`,
+   Symbol und Grafikbanner in `store/`.
+5. **Datenschutzerklärung**: `https://DEINNAME.github.io/mindquest/datenschutz.html`
+6. **Datensicherheit**: „Keine Datenerhebung", Verarbeitung nur auf dem Gerät,
+   Löschung durch Nutzer möglich. Die genauen Antworten stehen in `store/play-texte.md`.
+7. **Inhaltseinstufung**: Fragebogen ausfüllen, ergibt in der Regel PEGI 3.
+8. **Screenshots**: mindestens zwei, selbst aufgenommen.
+
+Google prüft neue Entwicklerkonten. Bei Privatpersonen sind derzeit
+**zwölf Tester über vierzehn Tage** nötig, bevor die App öffentlich darf —
+plane das ein und nutze so lange den internen Testkanal.
+
+### Was das Skript automatisch erledigt
+
+`scripts/android-setup.sh` setzt vor dem Bauen die Adaptive Icons aus `android-res/`
+ein, trägt die Berechtigungen nach, markiert GPS als **optional** (sonst filtert
+Google Geräte ohne GPS aus), schreibt Versionsname und -nummer und hängt die
+Signatur in die `build.gradle`.
 
 ---
 
